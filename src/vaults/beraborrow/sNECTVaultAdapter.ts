@@ -105,6 +105,13 @@ export class YourProtocolAdapter extends BaseAdapter {
         decimals: 18,
         chainId: 80094,
       },
+       {
+        address: "0x6969696969696969696969696969696969696969",
+        name: "Wrapped Bera",
+        symbol: "WBERA",
+        decimals: 18,
+        chainId: 80094,
+      },
     ];
   }
 
