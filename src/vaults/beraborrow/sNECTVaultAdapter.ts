@@ -1,11 +1,12 @@
 import { BaseAdapter, Token, TokenPrice } from "../../types";
+import { berachain } from "viem/chains";
+import { createPublicClient, http } from "viem";
 
 export class YourProtocolAdapter extends BaseAdapter {
   constructor(config: {
-       name: "sNECTVaultAdapter",
-      description:
-        "sNECTVaultAdapter is an adapter for the sNECT Vault at https://hub.berachain.com/vaults/0x1161e6a6600c08c21cff7ac689e781b41db56d85/",
-      enabled: true,
+    name: "sNECTVaultAdapter";
+    description: "sNECTVaultAdapter is an adapter for the sNECT Vault at https://hub.berachain.com/vaults/0x1161e6a6600c08c21cff7ac689e781b41db56d85/";
+    enabled: true;
   }) {
     super(config);
   }
@@ -32,61 +33,63 @@ export class YourProtocolAdapter extends BaseAdapter {
    * Get prices for staking tokens
    * These prices are used to calculate TVL for APR calculations
    */
-async getRewardVaultStakingTokenPrices(
-  stakingTokens: Token[]
-): Promise<TokenPrice[]> {
-  const multicallAddress = this.secrets.getSecret('networkConfig').multiCall; // Assuming you have access to this
+  async getRewardVaultStakingTokenPrices(
+    stakingTokens: Token[]
+  ): Promise<TokenPrice[]> {
+    // Creamos un cliente público directamente en la función
+    const publicClient = createPublicClient({
+      chain: berachain,
+      transport: http("https://rpc.berachain.com"),
+    });
 
-  const prices = await Promise.all(
-    stakingTokens.map(async (token) => {
-      const lspPrice = await multicall({
-        contracts: [
-          {
-            address: token.address,
-            abi: [
-              {
-                type: 'function',
-                name: 'totalSupply',
-                inputs: [],
-                outputs: [{ name: '', type: 'uint256' }],
-                stateMutability: 'view',
-              },
-            ],
-            functionName: 'totalSupply',
-          },
-          {
-            address: token.address,
-            abi: [
-              {
-                type: 'function',
-                name: 'totalAssets',
-                inputs: [],
-                outputs: [{ name: '', type: 'uint256' }],
-                stateMutability: 'view',
-              },
-            ],
-            functionName: 'totalAssets',
-          },
-        ],
-        multicallAddress: multicallAddress,
-      });
+    const prices = await Promise.all(
+      stakingTokens.map(async (token) => {
+        // Realizar llamadas individuales para obtener totalSupply y totalAssets
+        const totalSupply = (await publicClient.readContract({
+          address: token.address as `0x${string}`,
+          abi: [
+            {
+              type: "function",
+              name: "totalSupply",
+              inputs: [],
+              outputs: [{ name: "", type: "uint256" }],
+              stateMutability: "view",
+            },
+          ],
+          functionName: "totalSupply",
+        })) as bigint;
 
-      const [totalSupply, totalAssets] = lspPrice;
-      
-      if (totalSupply === 0n) throw new Error(`Failed to fetch LSP data for ${token.address}: totalSupply is 0`);
-      
-      const price = (totalAssets * BigInt(1e18)) / totalSupply;
+        const totalAssets = (await publicClient.readContract({
+          address: token.address as `0x${string}`,
+          abi: [
+            {
+              type: "function",
+              name: "totalAssets",
+              inputs: [],
+              outputs: [{ name: "", type: "uint256" }],
+              stateMutability: "view",
+            },
+          ],
+          functionName: "totalAssets",
+        })) as bigint;
 
-      return {
-        address: token.address,
-        price: Number(price) / 1e18, // Convert from bigint to number and adjust decimals
-        timestamp: Date.now(),
-      };
-    })
-  );
+        if (totalSupply === 0n)
+          throw new Error(
+            `Failed to fetch LSP data for ${token.address}: totalSupply is 0`
+          );
 
-  return prices;
-}
+        const price = (totalAssets * BigInt(1e18)) / totalSupply;
+
+        return {
+          address: token.address,
+          price: Number(price) / 1e18, // Convert from bigint to number and adjust decimals
+          timestamp: Date.now(),
+        };
+      })
+    );
+
+    return prices;
+  }
 
   /**
    * Get incentive/reward tokens
