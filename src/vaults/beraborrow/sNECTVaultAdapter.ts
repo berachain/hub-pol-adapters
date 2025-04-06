@@ -2,13 +2,14 @@ import { BaseAdapter, Token, TokenPrice } from "../../types";
 import { berachain } from "viem/chains";
 import { createPublicClient, http } from "viem";
 
-export class YourProtocolAdapter extends BaseAdapter {
-  constructor(config: {
-    name: "sNECTVaultAdapter";
-    description: "sNECTVaultAdapter is an adapter for the sNECT Vault at https://hub.berachain.com/vaults/0x1161e6a6600c08c21cff7ac689e781b41db56d85/";
-    enabled: true;
-  }) {
-    super(config);
+export class SNECTVaultAdapter extends BaseAdapter {
+  constructor() {
+    super({
+      name: "sNECTVaultAdapter",
+      description:
+        "sNECTVaultAdapter is an adapter for the sNECT Vault at https://hub.berachain.com/vaults/0x1161e6a6600c08c21cff7ac689e781b41db56d85/",
+      enabled: true,
+    });
   }
 
   /**
@@ -105,7 +106,7 @@ export class YourProtocolAdapter extends BaseAdapter {
         decimals: 18,
         chainId: 80094,
       },
-       {
+      {
         address: "0x6969696969696969696969696969696969696969",
         name: "Wrapped Bera",
         symbol: "WBERA",

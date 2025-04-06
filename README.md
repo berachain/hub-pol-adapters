@@ -82,12 +82,12 @@ Your adapter must extend the `BaseAdapter` class and implement all required meth
 import { BaseAdapter, Token, TokenPrice } from "../../types";
 
 export class YourProtocolAdapter extends BaseAdapter {
-  constructor(config: {
-    name: string;
-    description?: string;
-    enabled?: boolean;
-  }) {
-    super(config);
+  constructor() {
+    super({
+        name: "Give a name",
+        description?: "Give a description",
+        enabled?: true,
+    });
   }
 
   /**
