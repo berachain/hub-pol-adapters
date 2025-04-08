@@ -10,6 +10,7 @@ export interface TokenPrice {
   address: string;
   price: number;
   timestamp: number;
+  chainId: number;
 }
 
 /**

@@ -85,6 +85,7 @@ export class SNECTVaultAdapter extends BaseAdapter {
           address: token.address,
           price: Number(price) / 1e18, // Convert from bigint to number and adjust decimals
           timestamp: Date.now(),
+          chainId: token.chainId,
         };
       })
     );
