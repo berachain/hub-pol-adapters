@@ -188,9 +188,10 @@ npm run test:adapter -- src/vaults/your-protocol/your-adapter.ts
 
 ### 5. Include Your Adapter in Package Exports
 
-Export your package class in `src/index.ts` to ensure that it is importable by users of the package.
+Export your package class in `src/index.ts` to ensure that it is importable by the users of this package.
 
 ```typescript
+// ...
 // at the bottom of the file
 export { YourProtocolAdapter } from "./vaults/your-protocol/YourProtocolAdapter";
 ```
