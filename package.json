@@ -1,8 +1,9 @@
 {
-  "name": "berachain-hub-pol-adapters",
-  "version": "1.0.0",
+  "name": "@berachain/hub-pol-adapters",
+  "version": "1.0.1",
   "description": "Token price discovery adapters for Berachain Hub PoL",
   "main": "dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsc",
     "test": "jest",
@@ -30,5 +31,13 @@
     "ts-jest": "^29.3.1",
     "ts-node": "^10.9.1",
     "typescript": "^5.8.2"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/berachain/hub-pol-adapters.git"
+  },
+  "bugs": {
+    "url": "https://github.com/berachain/hub-pol-adapters/issues"
+  },
+  "homepage": "https://github.com/berachain/hub-pol-adapters#readme"
 }
