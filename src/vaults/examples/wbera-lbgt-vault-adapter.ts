@@ -35,6 +35,7 @@ export class WberaLBGTVaultAdapter extends BaseAdapter {
         Number(pool.dynamicData.totalLiquidity) /
         Number(pool.dynamicData.totalShares),
       timestamp: Date.now(),
+      chainId: 80094,
     }));
   }
 
@@ -60,6 +61,7 @@ export class WberaLBGTVaultAdapter extends BaseAdapter {
       address: tokenPrice.address,
       price: tokenPrice.price,
       timestamp: tokenPrice.updatedAt,
+      chainId: 80094,
     }));
   }
 }
