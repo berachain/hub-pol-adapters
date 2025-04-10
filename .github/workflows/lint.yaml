@@ -1,22 +1,22 @@
 name: lint
 on:
-  pull_request:
-    branches:
-      - main
-  push:
-    branches:
-      - main
+    pull_request:
+        branches:
+            - main
+    push:
+        branches:
+            - main
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-    name: ESLint
-    steps:
-      - uses: actions/checkout@v4
-      - name: Setup node
-        uses: actions/setup-node@v4
-        with:
-          node-version: latest
-      - name: Install dev dependencies
-        run: npm install --only=dev
-      - name: Run ESLint
-        run: npx eslint .
+    lint:
+        runs-on: ubuntu-latest
+        name: ESLint
+        steps:
+            - uses: actions/checkout@v4
+            - name: Setup node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: latest
+            - name: Install dev dependencies
+              run: npm install --only=dev
+            - name: Run ESLint
+              run: npx eslint .
