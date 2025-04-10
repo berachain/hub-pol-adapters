@@ -198,7 +198,7 @@ export { YourProtocolAdapter } from "./vaults/your-protocol/YourProtocolAdapter"
 
 ## Project Structure
 
-```
+```text
 src/
 ├── types/              # Type definitions and interfaces
 ├── utils/              # Utility functions and test scripts
