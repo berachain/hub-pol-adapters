@@ -174,7 +174,7 @@ Each token price should have:
 #### Important Notes for APR Calculations
 
 - For staking tokens that are LP tokens, the price should represent the TVL of the pool divided by the LP token supply
-- For incentive tokens, only include tokens that don't already have prices on https://hub.berachain.com/vaults
+- For incentive tokens, only include tokens that don't already have prices on <https://hub.berachain.com/vaults>
 - Accurate token prices are critical for correct APR calculations
 - Make sure to handle errors gracefully and provide meaningful error messages
 
@@ -186,9 +186,19 @@ After implementing your adapter, test it using the command:
 npm run test:adapter -- src/vaults/your-protocol/your-adapter.ts
 ```
 
+### 5. Include Your Adapter in Package Exports
+
+Export your package class in `src/index.ts` to ensure that it is importable by the users of this package.
+
+```typescript
+// ...
+// at the bottom of the file
+export { YourProtocolAdapter } from "./vaults/your-protocol/YourProtocolAdapter";
+```
+
 ## Project Structure
 
-```
+```text
 src/
 ├── types/              # Type definitions and interfaces
 ├── utils/              # Utility functions and test scripts
