@@ -179,9 +179,16 @@ export class AquaBeraAdapter extends BaseAdapter {
     // Implement to return incentive tokens
     return [
       {
-        address: "0x656b95E550C07a9ffe548bd4085c72418Ceb1dba",
-        symbol: "BGT",
-        name: "Bera Governance Token",
+        address: "0x1F7210257FA157227D09449229a9266b0D581337",
+        symbol: "BERAMO",
+        name: "Beramonium Coin",
+        decimals: 18,
+        chainId: 80094,
+      },
+      {
+        address: "0x6969696969696969696969696969696969696969",
+        symbol: "WBERA",
+        name: "Wrapped Bera",
         decimals: 18,
         chainId: 80094,
       },
