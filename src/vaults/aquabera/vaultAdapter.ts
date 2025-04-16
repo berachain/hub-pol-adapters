@@ -150,13 +150,15 @@ export class AquaBeraAdapter extends BaseAdapter {
                 }
 
                 //Multiply up to get integer price
-                const token0IntPrice = (token0_price * 1e18);
-                const token1IntPrice = (token1_price * 1e18);
+                const token0IntPrice = token0_price * 1e18;
+                const token1IntPrice = token1_price * 1e18;
 
                 // LP price = (totalAmount0 * price0 + totalAmount1 * price1) / totalSupply
                 const price =
-                    (Number(totalAmount0) * token0IntPrice + Number(totalAmount1) * token1IntPrice) /
-                    Number(totalSupply) / 1e18;
+                    (Number(totalAmount0) * token0IntPrice +
+                        Number(totalAmount1) * token1IntPrice) /
+                    Number(totalSupply) /
+                    1e18;
 
                 return {
                     address: token.address,
