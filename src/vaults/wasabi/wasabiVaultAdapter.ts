@@ -3,12 +3,12 @@ import { fetchTokenPrice } from "../examples/hub-api";
 import { berachain } from "viem/chains";
 import { createPublicClient, http, parseEther } from "viem";
 
-export class SWBERAVaultAdapter extends BaseAdapter {
+export class WasabiVaultAdapter extends BaseAdapter {
     constructor() {
         super({
-            name: "sWBERAVaultAdapter",
+            name: "WasabiVaultAdapter",
             description:
-                "sWBERAVaultAdapter is an adapter for the sWBERA Vault at https://hub.berachain.com/vaults/0x4ea84882228a5c881675151e951235e45256a484/",
+                "WasabiVaultAdapter is an adapter for Wasabi's sWBERA and sHONEY vaults at https://hub.berachain.com/vaults/0x4ea84882228a5c881675151e951235e45256a484/ and https://hub.berachain.com/vaults/0x49fcaa48e59e3d634ae6c6953cc30ce953dfba2c/",
             enabled: true,
         });
     }
