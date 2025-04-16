@@ -28,6 +28,13 @@ export class SWBERAVaultAdapter extends BaseAdapter {
                 decimals: 18,
                 chainId: 80094,
             },
+            {
+                address: "0xd948212f077e552533158becbc1882c1b19c40fe",
+                symbol: "sHONEY",
+                name: "Spicy HONEY Vault (sHONEY)",
+                decimals: 18,
+                chainId: 80094,
+            },
         ];
     }
 
