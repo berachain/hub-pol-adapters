@@ -14,7 +14,6 @@ jobs:
             - name: Checkout repo
               uses: actions/checkout@v4
               with:
-                  token: ${{ secrets.GHCR_REGISTRY }}
                   ref: ${{ github.event.repository.default_branch }}
             - name: Setup node
               uses: actions/setup-node@v4
