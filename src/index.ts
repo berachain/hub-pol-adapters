@@ -1,2 +1,4 @@
 export { SNECTVaultAdapter } from "./vaults/beraborrow/sNECTVaultAdapter";
-export { AquaBeraAdapter } from "./vaults/aquabera/vaultAdapter";
+export { AquaBeraBeramoAdapter } from "./vaults/aquabera/beramoWberaVaultAdapter";
+export { AquaBeraHenloAdapter } from "./vaults/aquabera/henloWberaVaultAdapter";
+export { WasabiVaultAdapter } from "./vaults/wasabi/wasabiVaultAdapter";
