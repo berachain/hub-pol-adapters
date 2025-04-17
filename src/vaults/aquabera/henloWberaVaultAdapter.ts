@@ -24,7 +24,7 @@ const PRICE_QUERY = `
   }
 `;
 
-export class AquaBeraAdapter extends BaseAdapter {
+export class AquaBeraHenloAdapter extends BaseAdapter {
     constructor() {
         super({
             name: "AquaBera",
@@ -43,9 +43,9 @@ export class AquaBeraAdapter extends BaseAdapter {
         // Example:
         return [
             {
-                address: "0xf9845a03F7e6b06645A03a28b943C8A4B5fE7BCC",
-                symbol: "AB-KODIAK-WBERA-BERAMO",
-                name: "AquaBera Kodiak wBera Beramo LP Token",
+                address: "0x04fD6a7B02E2e48caedaD7135420604de5f834f8",
+                symbol: "AB-KODIAK-WBERA-HENLO",
+                name: "AquaBera Kodiak wBera Henlo LP Token",
                 decimals: 18,
                 chainId: 80094,
             },
@@ -180,9 +180,9 @@ export class AquaBeraAdapter extends BaseAdapter {
         // Implement to return incentive tokens
         return [
             {
-                address: "0x1F7210257FA157227D09449229a9266b0D581337",
-                symbol: "BERAMO",
-                name: "Beramonium Coin",
+                address: "0xb2F776e9c1C926C4b2e54182Fac058dA9Af0B6A5",
+                symbol: "HENLO",
+                name: "Henlo Token",
                 decimals: 18,
                 chainId: 80094,
             },
