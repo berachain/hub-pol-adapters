@@ -1,4 +1,6 @@
-export { SNECTVaultAdapter } from "./vaults/beraborrow/sNECTVaultAdapter";
-export { AquaBeraBeramoAdapter } from "./vaults/aquabera/beramoWberaVaultAdapter";
-export { AquaBeraHenloAdapter } from "./vaults/aquabera/henloWberaVaultAdapter";
-export { WasabiVaultAdapter } from "./vaults/wasabi/wasabiVaultAdapter";
+import { SNECTVaultAdapter } from "./vaults/beraborrow/sNECTVaultAdapter";
+import { AquaBeraBeramoAdapter } from "./vaults/aquabera/beramoWberaVaultAdapter";
+import { AquaBeraHenloAdapter } from "./vaults/aquabera/henloWberaVaultAdapter";
+import { WasabiVaultAdapter } from "./vaults/wasabi/wasabiVaultAdapter";
+
+export { SNECTVaultAdapter, AquaBeraBeramoAdapter, AquaBeraHenloAdapter, WasabiVaultAdapter };
