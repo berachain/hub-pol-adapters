@@ -196,6 +196,10 @@ Export your package class in `src/index.ts` to ensure that it is importable by t
 export { YourProtocolAdapter } from "./vaults/your-protocol/YourProtocolAdapter";
 ```
 
+### 6. Get ready to merge!
+
+Make sure your branch is ready for merging! Be sure to build everything locally with `npm build`, lint with `npm run lint` and format with `npm run format`. We run CI checks before merging, so doing these steps will save everyone time.
+
 ## Project Structure
 
 ```text
