@@ -70,28 +70,43 @@ async function loadAdapterClasses(filePaths: string[]): Promise<(typeof BaseAdap
 }
 
 async function run(adapters: (typeof BaseAdapter)[]) {
-    adapters.forEach(async (AdapterClass) => {
+    for (const AdapterClass of adapters) {
         // Instantiate the adapter - we need to cast to any to bypass the abstract class check
         // since we know the actual class will be a concrete implementation
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const adapter = new (AdapterClass as any)({ name: "Test Adapter" });
+        const adapter = new (AdapterClass as any)();
+
+        console.log("\n" + "=".repeat(50));
+        console.log(`Adapter: ${AdapterClass.name}`);
+        console.log("=".repeat(50));
 
         // Get staking tokens and their prices
         const tokens = await adapter.getRewardVaultStakingTokens();
         const prices = await adapter.getRewardVaultStakingTokenPrices(tokens);
-        for (const price of prices) {
-            const token = tokens.find((t: Token) => t.address === price.address);
-            console.log(`Staking token ${token?.symbol}: $${price.price}`);
+
+        if (prices.length > 0) {
+            console.log("\nStaking Tokens:");
+            console.log("-".repeat(30));
+            for (const price of prices) {
+                const token = tokens.find((t: Token) => t.address === price.address);
+                console.log(`  ${token?.symbol}: $${price.price}`);
+            }
         }
 
         // Get incentive tokens and their prices
         const incentiveTokens = await adapter.getIncentiveTokens();
         const incentivePrices = await adapter.getIncentiveTokenPrices(incentiveTokens);
-        for (const price of incentivePrices) {
-            const token = incentiveTokens.find((t: Token) => t.address === price.address);
-            console.log(`Incentive token ${token?.symbol}: $${price.price}`);
+
+        if (incentivePrices.length > 0) {
+            console.log("\nIncentive Tokens:");
+            console.log("-".repeat(30));
+            for (const price of incentivePrices) {
+                const token = incentiveTokens.find((t: Token) => t.address === price.address);
+                console.log(`  ${token?.symbol}: $${price.price}`);
+            }
         }
-    });
+    }
+    console.log("\n" + "=".repeat(50) + "\n");
 }
 
 main();
