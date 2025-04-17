@@ -89,7 +89,7 @@ async function run(adapters: (typeof BaseAdapter)[]) {
             console.log("-".repeat(30));
             for (const price of prices) {
                 const token = tokens.find((t: Token) => t.address === price.address);
-                console.log(`  ${token?.symbol}: $${price.price.toFixed(6)}`);
+                console.log(`  ${token?.symbol}: $${price.price}`);
             }
         }
 
@@ -102,7 +102,7 @@ async function run(adapters: (typeof BaseAdapter)[]) {
             console.log("-".repeat(30));
             for (const price of incentivePrices) {
                 const token = incentiveTokens.find((t: Token) => t.address === price.address);
-                console.log(`  ${token?.symbol}: $${price.price.toFixed(6)}`);
+                console.log(`  ${token?.symbol}: $${price.price}`);
             }
         }
     }
