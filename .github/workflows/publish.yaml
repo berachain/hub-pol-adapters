@@ -43,11 +43,11 @@ jobs:
                   git config user.name "github-actions"
                   git config user.email "github-actions@github.com"
                   git add package.json package-lock.json
-                  git commit -m "Update package.json to version $TAG"
+                  git commit -m "chore(release): Update package.json to version $TAG"
                   git push origin ${{ github.event.repository.default_branch }}
               env:
                   GITHUB_TOKEN: ${{ github.token }}
             - name: Publish to npm
-              run: npm publish --access public
+              run: npm publish --provenance --access public
               env:
                   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
