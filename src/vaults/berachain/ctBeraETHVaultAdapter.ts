@@ -16,7 +16,7 @@ export class CtBeraETHVaultAdapter extends BaseAdapter {
         return [
             {
                 address: "0xf59e889f55777cd5a8dddca918500c5d062c8a57",
-                name: "Concrete Berachain BeraETH Vault Token",
+                name: "Concrete Berachain Ethereum Vault Token",
                 symbol: "ctBeraETH",
                 decimals: 18,
                 chainId: 80094,
@@ -37,7 +37,7 @@ export class CtBeraETHVaultAdapter extends BaseAdapter {
         const prices = await Promise.all(
             stakingTokens.map(async (token) => {
                 const totalSupply = (await publicClient.readContract({
-                    address: token.address as `0x${string}`,
+                    address: "0x49BEE393825BBAC404fEfE6E24f34854f30905D2",
                     abi: [
                         {
                             type: "function",
@@ -51,7 +51,7 @@ export class CtBeraETHVaultAdapter extends BaseAdapter {
                 })) as bigint;
 
                 const totalAssets = (await publicClient.readContract({
-                    address: token.address as `0x${string}`,
+                    address: "0x49BEE393825BBAC404fEfE6E24f34854f30905D2",
                     abi: [
                         {
                             type: "function",
@@ -64,12 +64,14 @@ export class CtBeraETHVaultAdapter extends BaseAdapter {
                     functionName: "totalAssets",
                 })) as bigint;
 
-                if (totalSupply === 0n)
+                // if (totalSupply === 0n)
+                // @TODO: Rever this change after the vaults are funded, this is allowed for now given timing restrictions
+                if (totalSupply == null)
                     throw new Error(
-                        `Failed to fetch LSP data for ${token.address}: totalSupply is 0`
+                        `Failed to fetch LSP data for ${token.address} on 0x49BEE393825BBAC404fEfE6E24f34854f30905D2: totalSupply is null`
                     );
 
-                const price = (totalAssets * BigInt(1e18)) / totalSupply;
+                const price = (totalAssets * BigInt(1e18)) / (totalSupply || 1n);
 
                 return {
                     address: token.address,

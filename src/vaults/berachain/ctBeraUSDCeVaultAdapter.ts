@@ -37,7 +37,7 @@ export class CtBeraUSDCeVaultAdapter extends BaseAdapter {
         const prices = await Promise.all(
             stakingTokens.map(async (token) => {
                 const totalSupply = (await publicClient.readContract({
-                    address: token.address as `0x${string}`,
+                    address: "0xc3cac88fd629652BBe0C3454D5d3049368A73849",
                     abi: [
                         {
                             type: "function",
@@ -51,7 +51,7 @@ export class CtBeraUSDCeVaultAdapter extends BaseAdapter {
                 })) as bigint;
 
                 const totalAssets = (await publicClient.readContract({
-                    address: token.address as `0x${string}`,
+                    address: "0xc3cac88fd629652BBe0C3454D5d3049368A73849",
                     abi: [
                         {
                             type: "function",
@@ -64,12 +64,14 @@ export class CtBeraUSDCeVaultAdapter extends BaseAdapter {
                     functionName: "totalAssets",
                 })) as bigint;
 
-                if (totalSupply === 0n)
+                // if (totalSupply === 0n)
+                // @TODO: Rever this change after the vaults are funded, this is allowed for now given timing restrictions
+                if (totalSupply == null)
                     throw new Error(
-                        `Failed to fetch LSP data for ${token.address}: totalSupply is 0`
+                        `Failed to fetch LSP data for ${token.address} on 0xc3cac88fd629652BBe0C3454D5d3049368A73849: totalSupply is null`
                     );
 
-                const price = (totalAssets * BigInt(1e18)) / totalSupply;
+                const price = (totalAssets * BigInt(1e18)) / (totalSupply || 1n);
 
                 return {
                     address: token.address,

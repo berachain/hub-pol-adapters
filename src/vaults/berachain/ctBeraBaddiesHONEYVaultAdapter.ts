@@ -37,7 +37,7 @@ export class CtBeraBaddiesHONEYVaultAdapter extends BaseAdapter {
         const prices = await Promise.all(
             stakingTokens.map(async (token) => {
                 const totalSupply = (await publicClient.readContract({
-                    address: token.address as `0x${string}`,
+                    address: "0xe49Ff31B2B3Fd346b0d1832d9fE224ee0d1c1F9e",
                     abi: [
                         {
                             type: "function",
@@ -51,7 +51,7 @@ export class CtBeraBaddiesHONEYVaultAdapter extends BaseAdapter {
                 })) as bigint;
 
                 const totalAssets = (await publicClient.readContract({
-                    address: token.address as `0x${string}`,
+                    address: "0xe49Ff31B2B3Fd346b0d1832d9fE224ee0d1c1F9e",
                     abi: [
                         {
                             type: "function",
@@ -66,7 +66,7 @@ export class CtBeraBaddiesHONEYVaultAdapter extends BaseAdapter {
 
                 if (totalSupply === 0n)
                     throw new Error(
-                        `Failed to fetch LSP data for ${token.address}: totalSupply is 0`
+                        `Failed to fetch LSP data for ${"0xe49Ff31B2B3Fd346b0d1832d9fE224ee0d1c1F9e"}: totalSupply is 0`
                     );
 
                 const price = (totalAssets * BigInt(1e18)) / totalSupply;
