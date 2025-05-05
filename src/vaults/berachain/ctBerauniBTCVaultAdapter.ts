@@ -85,7 +85,15 @@ export class CtBerauniBTCVaultAdapter extends BaseAdapter {
     }
 
     async getIncentiveTokens(): Promise<Token[]> {
-        return [];
+        return [
+            {
+                address: "0xC3827A4BC8224ee2D116637023b124CED6db6e90",
+                name: "uniBTC (uniBTC)",
+                symbol: "uniBTC",
+                decimals: 18,
+                chainId: 80094,
+            }
+        ];
     }
 
     async getIncentiveTokenPrices(): Promise<TokenPrice[]> {

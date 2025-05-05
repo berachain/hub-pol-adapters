@@ -85,7 +85,15 @@ export class CtBeraUSDCeVaultAdapter extends BaseAdapter {
     }
 
     async getIncentiveTokens(): Promise<Token[]> {
-        return [];
+        return [
+            {
+                address: "0x549943e04f40284185054145c6E4e9568C1D3241",
+                name: "Bridged USDC (Stargate) (USDC.e)",
+                symbol: "USDC.e",
+                decimals: 18,
+                chainId: 80094,
+            },
+        ];
     }
 
     async getIncentiveTokenPrices(): Promise<TokenPrice[]> {

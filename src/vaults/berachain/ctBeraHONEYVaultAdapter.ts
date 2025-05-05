@@ -85,7 +85,15 @@ export class CtBeraHONEYVaultAdapter extends BaseAdapter {
     }
 
     async getIncentiveTokens(): Promise<Token[]> {
-        return [];
+        return [
+            {
+                address: "0xFCBD14DC51f0A4d49d5E53C2E0950e0bC26d0Dce",
+                name: "Honey (HONEY)",
+                symbol: "HONEY",
+                decimals: 18,
+                chainId: 80094,
+            }
+        ];
     }
 
     async getIncentiveTokenPrices(): Promise<TokenPrice[]> {

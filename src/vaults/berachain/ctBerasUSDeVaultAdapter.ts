@@ -85,7 +85,15 @@ export class CtBerasUSDeVaultAdapter extends BaseAdapter {
     }
 
     async getIncentiveTokens(): Promise<Token[]> {
-        return [];
+        return [
+            {
+                address: "0x211Cc4DD073734dA055fbF44a2b4667d5E5fE5d2",
+                name: "Staked USDe (sUSDe)",
+                symbol: "sUSDe",
+                decimals: 18,
+                chainId: 80094,
+            }
+        ];
     }
 
     async getIncentiveTokenPrices(): Promise<TokenPrice[]> {

@@ -85,7 +85,15 @@ export class CtBeraETHVaultAdapter extends BaseAdapter {
     }
 
     async getIncentiveTokens(): Promise<Token[]> {
-        return [];
+        return [
+            {
+                address: "0x6fc6545d5cDE268D5C7f1e476D444F39c995120d",
+                name: "Berachain Staked ETH (beraETH)",
+                symbol: "beraETH",
+                decimals: 18,
+                chainId: 80094,
+            }
+        ];
     }
 
     async getIncentiveTokenPrices(): Promise<TokenPrice[]> {

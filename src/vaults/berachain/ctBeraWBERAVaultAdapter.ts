@@ -85,7 +85,15 @@ export class CtBeraWBERAVaultAdapter extends BaseAdapter {
     }
 
     async getIncentiveTokens(): Promise<Token[]> {
-        return [];
+        return [
+            {
+                address: "0x6969696969696969696969696969696969696969",
+                name: "Wrapped Bera (WBERA)",
+                symbol: "WBERA",
+                decimals: 18,
+                chainId: 80094,
+            },
+        ];
     }
 
     async getIncentiveTokenPrices(): Promise<TokenPrice[]> {

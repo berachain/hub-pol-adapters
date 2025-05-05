@@ -85,7 +85,15 @@ export class CtBeraLBTCVaultAdapter extends BaseAdapter {
     }
 
     async getIncentiveTokens(): Promise<Token[]> {
-        return [];
+        return [
+            {
+                address: "0xecAc9C5F704e954931349Da37F60E39f515c11c1",
+                name: "Lombard Staked BTC (LBTC)",
+                symbol: "LBTC",
+                decimals: 18,
+                chainId: 80094,
+            }
+        ];
     }
 
     async getIncentiveTokenPrices(): Promise<TokenPrice[]> {

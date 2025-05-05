@@ -85,7 +85,15 @@ export class CtBeraWBTCVaultAdapter extends BaseAdapter {
     }
 
     async getIncentiveTokens(): Promise<Token[]> {
-        return [];
+        return [
+            {
+                address: "0x0555E30da8f98308EdB960aa94C0Db47230d2B9c",
+                name: "Wrapped BTC (WBTC)",
+                symbol: "WBTC",
+                decimals: 18,
+                chainId: 80094,
+            },
+        ];
     }
 
     async getIncentiveTokenPrices(): Promise<TokenPrice[]> {

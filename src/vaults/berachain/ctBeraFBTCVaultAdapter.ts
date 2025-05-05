@@ -85,7 +85,15 @@ export class CtBeraFBTCVaultAdapter extends BaseAdapter {
     }
 
     async getIncentiveTokens(): Promise<Token[]> {
-        return [];
+        return [
+            {
+                address: "0xbAC93A69c62a1518136FF840B788Ba715cbDfE2B",
+                name: "Fire Bitcoin (FBTC)",
+                symbol: "FBTC",
+                decimals: 18,
+                chainId: 80094,
+            }
+        ];
     }
 
     async getIncentiveTokenPrices(): Promise<TokenPrice[]> {

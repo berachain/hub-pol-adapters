@@ -85,12 +85,18 @@ export class CtBeraUSDT0VaultAdapter extends BaseAdapter {
     }
 
     async getIncentiveTokens(): Promise<Token[]> {
-        // No incentive/reward tokens known at this time
-        return [];
+        return [
+            {
+                address: "0x779Ded0c9e1022225f8E0630b35a9b54bE713736",
+                name: "USD₮0 (USD₮0)",
+                symbol: "USDT0",
+                decimals: 18,
+                chainId: 80094,
+            },
+        ];
     }
 
     async getIncentiveTokenPrices(): Promise<TokenPrice[]> {
-        // No incentive/reward tokens
         return [];
     }
 }

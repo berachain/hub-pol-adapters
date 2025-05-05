@@ -85,7 +85,15 @@ export class CtBeraWETHVaultAdapter extends BaseAdapter {
     }
 
     async getIncentiveTokens(): Promise<Token[]> {
-        return [];
+        return [
+            {
+                address: "0x2f6f07cdcf3588944bf4c42ac74ff24bf56e7590",
+                name: "WETH (WETH)",
+                symbol: "WETH",
+                decimals: 18,
+                chainId: 80094,
+            },
+        ];
     }
 
     async getIncentiveTokenPrices(): Promise<TokenPrice[]> {
