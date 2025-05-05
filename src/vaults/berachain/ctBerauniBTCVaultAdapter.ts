@@ -24,11 +24,10 @@ export class CtBerauniBTCVaultAdapter extends BaseAdapter {
         ];
     }
 
-
     /**
      * Get prices for staking tokens
      * These prices are used to calculate TVL for APR calculations
-    */
+     */
     async getRewardVaultStakingTokenPrices(stakingTokens: Token[]): Promise<TokenPrice[]> {
         const publicClient = createPublicClient({
             chain: berachain,
@@ -92,7 +91,7 @@ export class CtBerauniBTCVaultAdapter extends BaseAdapter {
                 symbol: "uniBTC",
                 decimals: 18,
                 chainId: 80094,
-            }
+            },
         ];
     }
 

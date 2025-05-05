@@ -24,11 +24,10 @@ export class CtBeraUSDeVaultAdapter extends BaseAdapter {
         ];
     }
 
-
     /**
      * Get prices for staking tokens
      * These prices are used to calculate TVL for APR calculations
-    */
+     */
     async getRewardVaultStakingTokenPrices(stakingTokens: Token[]): Promise<TokenPrice[]> {
         const publicClient = createPublicClient({
             chain: berachain,
