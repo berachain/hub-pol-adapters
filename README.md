@@ -99,9 +99,16 @@ export class YourProtocolAdapter extends BaseAdapter {
     // Example:
     return [
       {
-        address: "0x...",
-        symbol: "LP-TOKEN",
-        name: "LP Token",
+        address: "0xv1...",
+        symbol: "VAULT1-LP-TOKEN",
+        name: "Vault1 LP Token",
+        decimals: 18,
+        chainId: 80094,
+      },
+      {
+        address: "0xv2...",
+        symbol: "VAULT2-LP-TOKEN",
+        name: "Vault2 LP Token",
         decimals: 18,
         chainId: 80094,
       },
@@ -119,8 +126,13 @@ export class YourProtocolAdapter extends BaseAdapter {
     // Example:
     return [
       {
-        address: "0x...",
+        address: "0xv1...",
         price: 1.23,
+        timestamp: Date.now(),
+      },
+      {
+        address: "0xv2...",
+        price: 4.56,
         timestamp: Date.now(),
       },
     ];
