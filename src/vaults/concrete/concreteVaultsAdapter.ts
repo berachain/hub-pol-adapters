@@ -2,7 +2,7 @@ import { BaseAdapter, Token, TokenPrice } from "../../types";
 import { createPublicClient, http } from "viem";
 import { berachain } from "viem/chains";
 
-interface BerachainVault {
+interface ConcreteVault {
     vaultAddress: `0x${string}`;
     stakingToken: Token;
     incentiveToken: Token;
@@ -10,7 +10,7 @@ interface BerachainVault {
 }
 
 // Consolidated vaults config: 1 staking token + 1 incentive token per vault
-const berachainVaults: Array<BerachainVault> = [
+const concreteVaults: Array<ConcreteVault> = [
     {
         vaultAddress: "0xe49Ff31B2B3Fd346b0d1832d9fE224ee0d1c1F9e",
         stakingToken: {
@@ -265,17 +265,17 @@ const berachainVaults: Array<BerachainVault> = [
     },
 ];
 
-export class BerachainVaultAdapter extends BaseAdapter {
+export class ConcreteVaultAdapter extends BaseAdapter {
     constructor() {
         super({
-            name: "BerachainVaultAdapter",
+            name: "ConcreteVaultAdapter",
             description: "Consolidated adapter for all Concrete Berachain vaults.",
             enabled: true,
         });
     }
 
     async getRewardVaultStakingTokens(): Promise<Token[]> {
-        return berachainVaults.map((v) => v.stakingToken);
+        return concreteVaults.map((v) => v.stakingToken);
     }
 
     async getRewardVaultStakingTokenPrices(stakingTokens: Token[]): Promise<TokenPrice[]> {
@@ -286,7 +286,7 @@ export class BerachainVaultAdapter extends BaseAdapter {
 
         return Promise.all(
             stakingTokens.map(async (token) => {
-                const vault = berachainVaults.find(
+                const vault = concreteVaults.find(
                     (v) => v.stakingToken.address.toLowerCase() === token.address.toLowerCase()
                 );
                 if (!vault) throw new Error(`Vault not found for staking token ${token.address}`);
@@ -343,7 +343,7 @@ export class BerachainVaultAdapter extends BaseAdapter {
     }
 
     async getIncentiveTokens(): Promise<Token[]> {
-        return berachainVaults.map((v) => v.incentiveToken);
+        return concreteVaults.map((v) => v.incentiveToken);
     }
 
     async getIncentiveTokenPrices(): Promise<TokenPrice[]> {
