@@ -228,12 +228,12 @@ src/
 
 ## Contributing
 
-1. Fork the repository
+1. Fork or clone the repository
 2. Create a feature branch: `git checkout -b feature/your-adapter`
 3. Implement your adapter
 4. Test your adapter
 5. Commit your changes: `git commit -m 'Add adapter for Your Protocol'`
-6. Push to your fork: `git push origin feature/your-adapter`
+6. Push the commit: `git push origin feature/your-adapter`
 7. Submit a pull request
 
 ## License
