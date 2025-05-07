@@ -13,5 +13,5 @@ export {
     WasabiVaultAdapter,
     DRUSDVaultAdapter,
     ConcreteVaultAdapter,
-    SxVaultAdapter
+    SxVaultAdapter,
 };

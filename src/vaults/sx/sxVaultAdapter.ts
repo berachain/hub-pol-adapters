@@ -34,7 +34,9 @@ export class SxVaultAdapter extends BaseAdapter {
      * These prices are used to calculate TVL for APR calculations
      */
     async getRewardVaultStakingTokenPrices(stakingTokens: Token[]): Promise<TokenPrice[]> {
-        const honeyPrice = (await fetchTokenPrice(["0xFCBD14DC51f0A4d49d5E53C2E0950e0bC26d0Dce"]))[0].price;
+        const honeyPrice = (
+            await fetchTokenPrice(["0xFCBD14DC51f0A4d49d5E53C2E0950e0bC26d0Dce"])
+        )[0].price;
         const prices = await Promise.all(
             stakingTokens.map(async (token) => {
                 return {
@@ -61,7 +63,7 @@ export class SxVaultAdapter extends BaseAdapter {
                 symbol: "HONEY",
                 decimals: 18,
                 chainId: 80094,
-            }
+            },
         ];
     }
 
