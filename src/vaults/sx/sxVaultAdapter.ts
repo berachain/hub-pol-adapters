@@ -34,19 +34,20 @@ export class SxVaultAdapter extends BaseAdapter {
      * These prices are used to calculate TVL for APR calculations
      */
     async getRewardVaultStakingTokenPrices(stakingTokens: Token[]): Promise<TokenPrice[]> {
-      const beraPrice = (await fetchTokenPrice(["0x6969696969696969696969696969696969696969"]))[0].price;
-      const prices = await Promise.all(
-          stakingTokens.map(async (token) => {
-              return {
-                  address: token.address,
-                  price: beraPrice, // 1 SXBRT = 1 BGT
-                  timestamp: Date.now(),
-                  chainId: token.chainId,
-              };
-          })
-      );
-      return prices;
-  }
+        const beraPrice = (await fetchTokenPrice(["0x6969696969696969696969696969696969696969"]))[0]
+            .price;
+        const prices = await Promise.all(
+            stakingTokens.map(async (token) => {
+                return {
+                    address: token.address,
+                    price: beraPrice, // 1 SXBRT = 1 BGT
+                    timestamp: Date.now(),
+                    chainId: token.chainId,
+                };
+            })
+        );
+        return prices;
+    }
 
     /**
      * Get incentive/reward tokens
