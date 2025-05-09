@@ -5,6 +5,8 @@ import { WasabiVaultAdapter } from "./vaults/wasabi/wasabiVaultAdapter";
 import { DRUSDVaultAdapter } from "./vaults/dolomite/drusdVaultAdapter";
 import { ConcreteVaultAdapter } from "./vaults/concrete/concreteVaultsAdapter";
 import { SxVaultAdapter } from "./vaults/sx/sxVaultAdapter";
+import { WeiberaVaultAdapter } from "./vaults/webera/weiberaVaultAdapter";
+import { WewberaVaultAdapter } from "./vaults/webera/wewberaVaultAdapter";
 
 export {
     SNECTVaultAdapter,
@@ -14,4 +16,6 @@ export {
     DRUSDVaultAdapter,
     ConcreteVaultAdapter,
     SxVaultAdapter,
+    WeiberaVaultAdapter,
+    WewberaVaultAdapter,
 };
