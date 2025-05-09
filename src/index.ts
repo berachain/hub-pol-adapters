@@ -7,6 +7,7 @@ import { ConcreteVaultAdapter } from "./vaults/concrete/concreteVaultsAdapter";
 import { SxVaultAdapter } from "./vaults/sx/sxVaultAdapter";
 import { WeiberaVaultAdapter } from "./vaults/webera/weiberaVaultAdapter";
 import { WewberaVaultAdapter } from "./vaults/webera/wewberaVaultAdapter";
+import { BullIshGaugeAdapter } from "./vaults/bullish/BullIshGaugeAdapter";
 
 export {
     SNECTVaultAdapter,
@@ -18,4 +19,5 @@ export {
     SxVaultAdapter,
     WeiberaVaultAdapter,
     WewberaVaultAdapter,
+    BullIshGaugeAdapter,
 };
