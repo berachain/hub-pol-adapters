@@ -5,6 +5,7 @@ import { WasabiVaultAdapter } from "./vaults/wasabi/wasabiVaultAdapter";
 import { DRUSDVaultAdapter } from "./vaults/dolomite/drusdVaultAdapter";
 import { ConcreteVaultAdapter } from "./vaults/concrete/concreteVaultsAdapter";
 import { SxVaultAdapter } from "./vaults/sx/sxVaultAdapter";
+import { BullIshGaugeAdapter } from "./vaults/bullish/BullIshGaugeAdapter";
 
 export {
     SNECTVaultAdapter,
@@ -14,4 +15,5 @@ export {
     DRUSDVaultAdapter,
     ConcreteVaultAdapter,
     SxVaultAdapter,
+    BullIshGaugeAdapter,
 };
