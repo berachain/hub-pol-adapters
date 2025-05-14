@@ -346,7 +346,7 @@ export class ConcreteVaultAdapter extends BaseAdapter {
         return concreteVaults.map((v) => v.incentiveToken);
     }
 
-    async getIncentiveTokenPrices(): Promise<TokenPrice[]> {
+    async getIncentiveTokenPrices(_incentiveTokens: Token[]): Promise<TokenPrice[]> {
         // Not implemented (per original pattern)
         return [];
     }
