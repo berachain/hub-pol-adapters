@@ -156,8 +156,7 @@ export class IVXVaultAdapter extends BaseAdapter {
      * These tokens are used to calculate reward value for APR calculations
      */
     async getIncentiveTokens(): Promise<Token[]> {
-
-      return [
+        return [
             {
                 address: "0xFCBD14DC51f0A4d49d5E53C2E0950e0bC26d0Dce",
                 symbol: "HONEY",
