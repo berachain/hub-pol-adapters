@@ -27,8 +27,6 @@ export class IVXVaultAdapter extends BaseAdapter {
      * These tokens are used to calculate TVL for APR calculations
      */
     async getRewardVaultStakingTokens(): Promise<Token[]> {
-        // Implement to return staking tokens
-        // Example:
         return [
             {
                 address: "0x3b8B155E3C44f07f6EAd507570f4047C8B450A7F",
@@ -103,7 +101,7 @@ export class IVXVaultAdapter extends BaseAdapter {
 
             prices.push({
                 address: token.address,
-                price: TVL / totalSupplyInDecimal, // Convert from bigint to number and adjust decimals
+                price: TVL / totalSupplyInDecimal,
                 timestamp: Date.now(),
                 chainId: token.chainId,
             });
@@ -132,7 +130,7 @@ export class IVXVaultAdapter extends BaseAdapter {
         vaultAddress: `0x${string}`
     ): Promise<bigint[]> {
         // Get balances of tokens in the vault
-        // How we can isure the order of the tokens is the same as the prices?
+
         const balances: bigint[] = [];
         for (const token of tokens) {
             const balance = (await publicClient.readContract({
@@ -158,8 +156,8 @@ export class IVXVaultAdapter extends BaseAdapter {
      * These tokens are used to calculate reward value for APR calculations
      */
     async getIncentiveTokens(): Promise<Token[]> {
-        // Implement to return incentive tokens
-        return [
+
+      return [
             {
                 address: "0xFCBD14DC51f0A4d49d5E53C2E0950e0bC26d0Dce",
                 symbol: "HONEY",
