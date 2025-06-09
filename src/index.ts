@@ -8,6 +8,7 @@ import { SxVaultAdapter } from "./vaults/sx/sxVaultAdapter";
 import { WeiberaVaultAdapter } from "./vaults/webera/weiberaVaultAdapter";
 import { WewberaVaultAdapter } from "./vaults/webera/wewberaVaultAdapter";
 import { BullIshGaugeAdapter } from "./vaults/bullish/BullIshGaugeAdapter";
+import { IVXVaultAdapter } from "./vaults/ivx/ivx-adapter";
 import { SolvBTCBeraVaultAdapter } from "./vaults/solv/SolvBTCBeraVaultAdapter";
 
 export {
@@ -21,5 +22,6 @@ export {
     WeiberaVaultAdapter,
     WewberaVaultAdapter,
     BullIshGaugeAdapter,
+    IVXVaultAdapter,
     SolvBTCBeraVaultAdapter,
 };
