@@ -1,30 +1,10 @@
 import { BaseAdapter, Token, TokenPrice } from "../../types";
+import { fetchTokenPrice } from "../examples/hub-api";
 import { berachain } from "viem/chains";
 import { createPublicClient, http } from "viem";
 
-const BERACHAIN_API_URL = "https://api.berachain.com/graphql";
 const IBGT_ADDRESS = "0xac03CABA51e17c86c921E1f6CBFBdC91F8BB2E6b";
 const ORIBGT_ADDRESS = "0x69f1E971257419B1E9C405A553f252c64A29A30a";
-
-type TokenPriceData = {
-    address: string;
-    chain: string;
-    price: number;
-    updatedAt: BigInteger;
-    updatedBy: string;
-};
-
-const PRICE_QUERY = `
-  query GetTokenPrices($addresses: [String!]!) {
-    tokenGetCurrentPrices(addressIn: $addresses, chains: BERACHAIN) {
-      address
-      chain
-      price
-      updatedAt
-      updatedBy
-    }
-  }
-`;
 
 export class GoldilocksOribgtVaultAdapter extends BaseAdapter {
     constructor() {
@@ -122,7 +102,7 @@ export class GoldilocksOribgtVaultAdapter extends BaseAdapter {
                 })) as bigint;
 
                 // price of ibgt
-                const prices = await getTokenPrices([IBGT_ADDRESS]);
+                const prices = await fetchTokenPrice([IBGT_ADDRESS]);
                 const ibgtPrice = prices[0].price * 1e18;
 
                 // ratio of oribgt to oribgt-ot in the pool
@@ -161,32 +141,5 @@ export class GoldilocksOribgtVaultAdapter extends BaseAdapter {
 
     async getIncentiveTokenPrices(_incentiveTokens: Token[]): Promise<TokenPrice[]> {
         return [];
-    }
-}
-
-async function getTokenPrices(addresses: string[]): Promise<TokenPriceData[]> {
-    try {
-        const response = await fetch(BERACHAIN_API_URL, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                query: PRICE_QUERY,
-                variables: {
-                    addresses,
-                },
-            }),
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        return data.data.tokenGetCurrentPrices;
-    } catch (error) {
-        console.error("Error fetching pool data:", error);
-        throw error;
     }
 }
