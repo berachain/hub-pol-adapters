@@ -10,6 +10,7 @@ import { WewberaVaultAdapter } from "./vaults/webera/wewberaVaultAdapter";
 import { BullIshGaugeAdapter } from "./vaults/bullish/BullIshGaugeAdapter";
 import { IVXVaultAdapter } from "./vaults/ivx/ivx-adapter";
 import { SolvBTCBeraVaultAdapter } from "./vaults/solv/SolvBTCBeraVaultAdapter";
+import { BendVaultAdapter } from "./vaults/bend";
 
 export {
     SNECTVaultAdapter,
@@ -18,6 +19,7 @@ export {
     WasabiVaultAdapter,
     DRUSDVaultAdapter,
     ConcreteVaultAdapter,
+    BendVaultAdapter,
     SxVaultAdapter,
     WeiberaVaultAdapter,
     WewberaVaultAdapter,
