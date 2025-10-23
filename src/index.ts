@@ -11,6 +11,8 @@ import { BullIshGaugeAdapter } from "./vaults/bullish/BullIshGaugeAdapter";
 import { IVXVaultAdapter } from "./vaults/ivx/ivx-adapter";
 import { SolvBTCBeraVaultAdapter } from "./vaults/solv/SolvBTCBeraVaultAdapter";
 import { BendVaultAdapter } from "./vaults/bend";
+import { WberaUsdcVaultAdapter } from "./vaults/brownfi/wberaUsdcVaultAdapter";
+import { WberaHoneyVaultAdapter } from "./vaults/brownfi/wberaHoneyVaultAdapter";
 
 export {
     SNECTVaultAdapter,
@@ -26,4 +28,6 @@ export {
     BullIshGaugeAdapter,
     IVXVaultAdapter,
     SolvBTCBeraVaultAdapter,
+    WberaUsdcVaultAdapter,
+    WberaHoneyVaultAdapter,
 };
