@@ -22,13 +22,13 @@ The adapter queries the WinnieSwap subgraph to retrieve all active Sticky Vaults
 
 ```graphql
 query GetStickyVaults {
-  stickyVaults {
-    items {
-      id      # Vault contract address
-      name    # Vault name (e.g., "Sticky Vault WBERA-HONEY-0.05%")
-      pool    # Underlying Uniswap V3 pool address
+    stickyVaults {
+        items {
+            id # Vault contract address
+            name # Vault name (e.g., "Sticky Vault WBERA-HONEY-0.05%")
+            pool # Underlying Uniswap V3 pool address
+        }
     }
-  }
 }
 ```
 
