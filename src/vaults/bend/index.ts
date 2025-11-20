@@ -91,7 +91,7 @@ export class BendVaultAdapter extends BaseAdapter {
             },
         });
 
-        const tokensWithData = await Promise.all(
+        const tokensWithDataResults = await Promise.allSettled(
             stakingTokens.map(async (token: Token) => {
                 // Perform individual calls to get the underlying asset, totalSupply and totalAssets
                 const [ratio, underlyingAsset] = await Promise.all([
@@ -130,32 +130,47 @@ export class BendVaultAdapter extends BaseAdapter {
             })
         );
 
+        const tokensWithData = tokensWithDataResults
+            .filter(
+                (
+                    result
+                ): result is PromiseFulfilledResult<{
+                    token: Token;
+                    ratio: bigint;
+                    underlyingAsset: `0x${string}`;
+                }> => {
+                    if (result.status === "fulfilled") return true;
+
+                    console.error("Error fetching bend staking token data:", result.reason);
+                    return false;
+                }
+            )
+            .map((result) => result.value);
+
         const underlyingAssets = tokensWithData.map(({ underlyingAsset }) => underlyingAsset);
 
         const underlyingAssetsPrices = await fetchTokenPrice(underlyingAssets);
 
-        const prices = await Promise.all(
-            tokensWithData.map(async ({ token, ratio, underlyingAsset }) => {
-                const assetPrice = underlyingAssetsPrices.find(
-                    ({ address }) => address.toLowerCase() === underlyingAsset.toLowerCase()
-                )?.price;
+        const prices = tokensWithData.map(({ token, ratio, underlyingAsset }) => {
+            const assetPrice = underlyingAssetsPrices.find(
+                ({ address }) => address.toLowerCase() === underlyingAsset.toLowerCase()
+            )?.price;
 
-                if (!assetPrice) {
-                    throw new Error(
-                        `Failed to find token price for underlying token: ${underlyingAsset}`
-                    );
-                }
+            if (!assetPrice) {
+                throw new Error(
+                    `Failed to find token price for underlying token: ${underlyingAsset}`
+                );
+            }
 
-                const price = ratio * parseEther(assetPrice.toString());
+            const price = ratio * parseEther(assetPrice.toString());
 
-                return {
-                    address: token.address,
-                    price: Number(price) / 1e18 / 1e18, // Convert from bigint to number and adjust decimals
-                    timestamp: Date.now(),
-                    chainId: token.chainId,
-                };
-            })
-        );
+            return {
+                address: token.address,
+                price: Number(price) / 1e18 / 1e18, // Convert from bigint to number and adjust decimals
+                timestamp: Date.now(),
+                chainId: token.chainId,
+            };
+        });
 
         return prices;
     }
