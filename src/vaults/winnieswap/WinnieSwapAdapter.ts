@@ -12,6 +12,15 @@ interface StickyVaultData {
     id: string; // Vault address
     name: string;
     pool: string; // Pool address (string)
+    poolRef: {
+        token0Ref: {
+            symbol: string;
+        };
+        token1Ref: {
+            symbol: string;
+        };
+        feeTier: number;
+    };
 }
 
 interface TokenPriceData {
@@ -29,6 +38,15 @@ const VAULTS_QUERY = `
         id
         name
         pool
+        poolRef {
+          token0Ref {
+            symbol
+          }
+          token1Ref {
+            symbol
+          }
+          feeTier
+        }
       }
     }
   }
@@ -82,7 +100,7 @@ export class WinnieSwapAdapter extends BaseAdapter {
             // Convert vault data to Token format
             return vaults.map((vault) => ({
                 address: vault.id.toLowerCase(),
-                symbol: vault.name.replace(/\s+/g, "-").toUpperCase(),
+                symbol: `${vault.poolRef.token0Ref.symbol}-${vault.poolRef.token1Ref.symbol}-${vault.poolRef.feeTier}`,
                 name: vault.name,
                 decimals: 18,
                 chainId: 80094,
