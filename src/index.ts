@@ -13,6 +13,7 @@ import { SolvBTCBeraVaultAdapter } from "./vaults/solv/SolvBTCBeraVaultAdapter";
 import { BendVaultAdapter } from "./vaults/bend";
 import { WberaUsdcVaultAdapter } from "./vaults/brownfi/wberaUsdcVaultAdapter";
 import { WberaHoneyVaultAdapter } from "./vaults/brownfi/wberaHoneyVaultAdapter";
+import { WinnieSwapAdapter } from "./vaults/winnieswap/WinnieSwapAdapter";
 import { TermMaxVaultAdapter } from "./vaults/termmax";
 
 export {
@@ -31,5 +32,6 @@ export {
     SolvBTCBeraVaultAdapter,
     WberaUsdcVaultAdapter,
     WberaHoneyVaultAdapter,
+    WinnieSwapAdapter,
     TermMaxVaultAdapter,
 };
