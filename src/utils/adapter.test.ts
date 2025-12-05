@@ -1,6 +1,7 @@
 import { BaseAdapter, Token } from "../types";
 import path from "path";
 import fs from "fs";
+import { adapters as exportedAdapters } from "../index";
 
 async function main() {
     // Get the filename from command line arguments
@@ -23,6 +24,20 @@ async function main() {
         (file) => `../vaults/${file.split("src/vaults/").reverse()[0]}`
     );
     const loadAdapters = await loadAdapterClasses(adapterImportPaths);
+
+    if (runAll && loadAdapters.length !== exportedAdapters.length) {
+        // -1 for the BaseAdapter class
+
+        const missingAdapters = loadAdapters
+            .filter(
+                (adapter) => !exportedAdapters.some((eAdapter) => eAdapter.name === adapter.name)
+            )
+            .map((adapter) => adapter.name);
+        console.error(
+            `Expected ${exportedAdapters.length} adapters, but found ${loadAdapters.length}. Missing adapters: ${missingAdapters.join(", ")}`
+        );
+        process.exit(1);
+    }
 
     // Run the test with the provided classes
     run(loadAdapters);

@@ -1,6 +1,4 @@
 import { BaseAdapter, Token, TokenPrice } from "../../types";
-import { berachain } from "viem/chains";
-import { createPublicClient, http } from "viem";
 
 export class WewberaVaultAdapter extends BaseAdapter {
     constructor() {
@@ -33,14 +31,9 @@ export class WewberaVaultAdapter extends BaseAdapter {
      * These prices are used to calculate TVL for APR calculations
      */
     async getRewardVaultStakingTokenPrices(stakingTokens: Token[]): Promise<TokenPrice[]> {
-        const publicClient = createPublicClient({
-            chain: berachain,
-            transport: http("https://rpc.berachain.com"),
-        });
-
         const prices = await Promise.all(
             stakingTokens.map(async (token) => {
-                const totalSupply = (await publicClient.readContract({
+                const totalSupply = (await this.publicClient.readContract({
                     address: token.address as `0x${string}`,
                     abi: [
                         {
@@ -54,7 +47,7 @@ export class WewberaVaultAdapter extends BaseAdapter {
                     functionName: "totalSupply",
                 })) as bigint;
 
-                const totalAssets = (await publicClient.readContract({
+                const totalAssets = (await this.publicClient.readContract({
                     address: token.address as `0x${string}`,
                     abi: [
                         {

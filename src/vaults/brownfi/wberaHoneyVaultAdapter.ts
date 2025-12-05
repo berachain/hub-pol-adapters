@@ -1,12 +1,5 @@
 import { BaseAdapter, Token, TokenPrice } from "../../types";
 import { fetchTokenPrice } from "../examples/hub-api";
-import { berachain } from "viem/chains";
-import { createPublicClient, http } from "viem";
-
-const publicClient = createPublicClient({
-    chain: berachain,
-    transport: http("https://rpc.berachain.com"),
-});
 
 export class WberaHoneyVaultAdapter extends BaseAdapter {
     constructor() {
@@ -33,7 +26,7 @@ export class WberaHoneyVaultAdapter extends BaseAdapter {
     async getRewardVaultStakingTokenPrices(stakingTokens: Token[]): Promise<TokenPrice[]> {
         const prices = await Promise.all(
             stakingTokens.map(async (token) => {
-                const totalSupply = (await publicClient.readContract({
+                const totalSupply = (await this.publicClient.readContract({
                     address: token.address as `0x${string}`,
                     abi: [
                         {
@@ -47,7 +40,7 @@ export class WberaHoneyVaultAdapter extends BaseAdapter {
                     functionName: "totalSupply",
                 })) as bigint;
 
-                const token0_addr = (await publicClient.readContract({
+                const token0_addr = (await this.publicClient.readContract({
                     address: token.address as `0x${string}`,
                     abi: [
                         {
@@ -61,7 +54,7 @@ export class WberaHoneyVaultAdapter extends BaseAdapter {
                     functionName: "token0",
                 })) as string;
 
-                const token1_addr = (await publicClient.readContract({
+                const token1_addr = (await this.publicClient.readContract({
                     address: token.address as `0x${string}`,
                     abi: [
                         {
@@ -115,7 +108,7 @@ export class WberaHoneyVaultAdapter extends BaseAdapter {
 
         const balances: bigint[] = [];
         for (const token of tokens) {
-            const balance = (await publicClient.readContract({
+            const balance = (await this.publicClient.readContract({
                 address: token as `0x${string}`,
                 abi: [
                     {

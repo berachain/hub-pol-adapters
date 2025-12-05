@@ -1,6 +1,4 @@
 import { BaseAdapter, Token, TokenPrice } from "../../types";
-import { berachain } from "viem/chains";
-import { createPublicClient, http } from "viem";
 import { fetchTokenPrice } from "../examples/hub-api";
 
 export class BullIshGaugeAdapter extends BaseAdapter {
@@ -25,11 +23,6 @@ export class BullIshGaugeAdapter extends BaseAdapter {
     }
 
     async getRewardVaultStakingTokenPrices(stakingTokens: Token[]): Promise<TokenPrice[]> {
-        const publicClient = createPublicClient({
-            chain: berachain,
-            transport: http("https://rpc.berachain.com"),
-        });
-
         // Get BERA price
         const beraPrices = await fetchTokenPrice(["0x6969696969696969696969696969696969696969"]);
         const beraPrice =
@@ -41,7 +34,7 @@ export class BullIshGaugeAdapter extends BaseAdapter {
 
         const prices = await Promise.all(
             stakingTokens.map(async (token) => {
-                const _totalSupply = (await publicClient.readContract({
+                const _totalSupply = (await this.publicClient.readContract({
                     address: token.address as `0x${string}`,
                     abi: [
                         {

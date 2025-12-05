@@ -1,7 +1,6 @@
 import { BaseAdapter, Token, TokenPrice } from "../../types";
 import { fetchTokenPrice } from "../examples/hub-api";
-import { berachain } from "viem/chains";
-import { createPublicClient, http, parseEther } from "viem";
+import { parseEther } from "viem";
 
 export class TermMaxVaultAdapter extends BaseAdapter {
     constructor() {
@@ -33,15 +32,10 @@ export class TermMaxVaultAdapter extends BaseAdapter {
      * These prices are used to calculate TVL for APR calculations
      */
     async getRewardVaultStakingTokenPrices(stakingTokens: Token[]): Promise<TokenPrice[]> {
-        const publicClient = createPublicClient({
-            chain: berachain,
-            transport: http("https://rpc.berachain.com"),
-        });
-
         const prices = await Promise.all(
             stakingTokens.map(async (token) => {
                 // ERC4626: Convert 1 share to assets to get the ratio
-                const ratio = await publicClient.readContract({
+                const ratio = await this.publicClient.readContract({
                     address: token.address as `0x${string}`,
                     args: [parseEther("1")],
                     abi: [
@@ -57,7 +51,7 @@ export class TermMaxVaultAdapter extends BaseAdapter {
                 });
 
                 // Get the underlying asset address
-                const underlyingAsset = await publicClient.readContract({
+                const underlyingAsset = await this.publicClient.readContract({
                     address: token.address as `0x${string}`,
                     abi: [
                         {
