@@ -1,17 +1,10 @@
 import { BaseAdapter, Token, TokenPrice } from "../../types";
-import { berachain } from "viem/chains";
-import { createPublicClient, http } from "viem";
 import { fetchTokenPrice } from "../examples/hub-api";
 
 interface SupportedToken {
     readonly address: string;
     readonly decimals: number;
 }
-
-const publicClient = createPublicClient({
-    chain: berachain,
-    transport: http("https://rpc.berachain.com"),
-});
 
 export class IVXVaultAdapter extends BaseAdapter {
     constructor() {
@@ -74,7 +67,7 @@ export class IVXVaultAdapter extends BaseAdapter {
             let TVL = 0;
             const IVLP = token.address as `0x${string}`;
             // Get Staked Token Total Supply
-            const totalSupply = (await publicClient.readContract({
+            const totalSupply = (await this.publicClient.readContract({
                 address: IVLP,
                 abi: [
                     {
@@ -133,7 +126,7 @@ export class IVXVaultAdapter extends BaseAdapter {
 
         const balances: bigint[] = [];
         for (const token of tokens) {
-            const balance = (await publicClient.readContract({
+            const balance = (await this.publicClient.readContract({
                 address: token as `0x${string}`,
                 abi: [
                     {

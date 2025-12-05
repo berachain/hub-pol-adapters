@@ -15,8 +15,10 @@ import { WberaUsdcVaultAdapter } from "./vaults/brownfi/wberaUsdcVaultAdapter";
 import { WberaHoneyVaultAdapter } from "./vaults/brownfi/wberaHoneyVaultAdapter";
 import { WinnieSwapAdapter } from "./vaults/winnieswap/WinnieSwapAdapter";
 import { TermMaxVaultAdapter } from "./vaults/termmax";
+import { BaseAdapter } from "./types";
+import { WberaLBGTVaultAdapter } from "./vaults/examples/wbera-lbgt-vault-adapter";
 
-export {
+export const adapters: (typeof BaseAdapter)[] = [
     SNECTVaultAdapter,
     AquaBeraBeramoAdapter,
     AquaBeraHenloAdapter,
@@ -33,5 +35,6 @@ export {
     WberaUsdcVaultAdapter,
     WberaHoneyVaultAdapter,
     WinnieSwapAdapter,
+    WberaLBGTVaultAdapter,
     TermMaxVaultAdapter,
-};
+];

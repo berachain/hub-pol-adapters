@@ -1,3 +1,6 @@
+import { http, createPublicClient, PublicClient } from "viem";
+import { berachain } from "viem/chains";
+
 export interface Token {
     address: string;
     symbol: string;
@@ -22,10 +25,24 @@ export abstract class BaseAdapter {
     description?: string;
     enabled: boolean;
 
-    constructor(config: { name: string; description?: string; enabled?: boolean }) {
+    protected publicClient: PublicClient;
+
+    constructor(config: {
+        name: string;
+        description?: string;
+        enabled?: boolean;
+        publicClient?: PublicClient;
+    }) {
         this.name = config.name;
         this.description = config.description;
         this.enabled = config.enabled ?? true;
+
+        this.publicClient =
+            config.publicClient ??
+            createPublicClient({
+                chain: berachain,
+                transport: http("https://rpc.berachain.com"),
+            });
     }
 
     /**
