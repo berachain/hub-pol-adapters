@@ -27,7 +27,7 @@ export abstract class BaseAdapter {
 
     protected publicClient: PublicClient;
 
-    constructor(config: { publicClient?: PublicClient }) {
+    constructor(config: { publicClient?: PublicClient } = {}) {
         this.publicClient =
             config.publicClient ??
             createPublicClient({
