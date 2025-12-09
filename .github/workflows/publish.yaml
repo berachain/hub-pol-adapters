@@ -32,8 +32,6 @@ jobs:
               run: npm install -g npm@latest
             - name: Install dependencies
               run: npm ci
-            - name: Run build
-              run: npm run build
             - name: Run tests
               run: npm run test:adapter all
             - name: Update package.json with release tag
