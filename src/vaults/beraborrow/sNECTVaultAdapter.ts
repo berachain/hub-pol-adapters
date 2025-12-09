@@ -1,6 +1,4 @@
 import { BaseAdapter, Token, TokenPrice } from "../../types";
-import { berachain } from "viem/chains";
-import { createPublicClient, http } from "viem";
 
 export class SNECTVaultAdapter extends BaseAdapter {
     constructor() {
@@ -35,16 +33,10 @@ export class SNECTVaultAdapter extends BaseAdapter {
      * These prices are used to calculate TVL for APR calculations
      */
     async getRewardVaultStakingTokenPrices(stakingTokens: Token[]): Promise<TokenPrice[]> {
-        // Creamos un cliente público directamente en la función
-        const publicClient = createPublicClient({
-            chain: berachain,
-            transport: http("https://rpc.berachain.com"),
-        });
-
         const prices = await Promise.all(
             stakingTokens.map(async (token) => {
                 // Realizar llamadas individuales para obtener totalSupply y totalAssets
-                const totalSupply = (await publicClient.readContract({
+                const totalSupply = (await this.publicClient.readContract({
                     address: token.address as `0x${string}`,
                     abi: [
                         {
@@ -58,7 +50,7 @@ export class SNECTVaultAdapter extends BaseAdapter {
                     functionName: "totalSupply",
                 })) as bigint;
 
-                const totalAssets = (await publicClient.readContract({
+                const totalAssets = (await this.publicClient.readContract({
                     address: token.address as `0x${string}`,
                     abi: [
                         {

@@ -1,6 +1,4 @@
 import { BaseAdapter, Token, TokenPrice } from "../../types";
-import { createPublicClient, http } from "viem";
-import { berachain } from "viem/chains";
 
 interface ConcreteVault {
     vaultAddress: `0x${string}`;
@@ -279,11 +277,6 @@ export class ConcreteVaultAdapter extends BaseAdapter {
     }
 
     async getRewardVaultStakingTokenPrices(stakingTokens: Token[]): Promise<TokenPrice[]> {
-        const publicClient = createPublicClient({
-            chain: berachain,
-            transport: http("https://rpc.berachain.com"),
-        });
-
         return Promise.all(
             stakingTokens.map(async (token) => {
                 const vault = concreteVaults.find(
@@ -291,7 +284,7 @@ export class ConcreteVaultAdapter extends BaseAdapter {
                 );
                 if (!vault) throw new Error(`Vault not found for staking token ${token.address}`);
                 const { vaultAddress, funded } = vault;
-                const totalSupply = (await publicClient.readContract({
+                const totalSupply = (await this.publicClient.readContract({
                     address: vaultAddress,
                     abi: [
                         {
@@ -304,7 +297,7 @@ export class ConcreteVaultAdapter extends BaseAdapter {
                     ],
                     functionName: "totalSupply",
                 })) as bigint;
-                const totalAssets = (await publicClient.readContract({
+                const totalAssets = (await this.publicClient.readContract({
                     address: vaultAddress,
                     abi: [
                         {

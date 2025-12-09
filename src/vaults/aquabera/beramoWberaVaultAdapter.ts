@@ -1,6 +1,4 @@
 import { BaseAdapter, Token, TokenPrice } from "../../types";
-import { berachain } from "viem/chains";
-import { createPublicClient, http } from "viem";
 
 const BERACHAIN_API_URL = "https://api.berachain.com/graphql";
 
@@ -57,14 +55,9 @@ export class AquaBeraBeramoAdapter extends BaseAdapter {
      * These prices are used to calculate TVL for APR calculations
      */
     async getRewardVaultStakingTokenPrices(stakingTokens: Token[]): Promise<TokenPrice[]> {
-        const publicClient = createPublicClient({
-            chain: berachain,
-            transport: http("https://rpc.berachain.com"),
-        });
-
         const prices = await Promise.all(
             stakingTokens.map(async (token) => {
-                const totalSupply = (await publicClient.readContract({
+                const totalSupply = (await this.publicClient.readContract({
                     address: token.address as `0x${string}`,
                     abi: [
                         {
@@ -78,7 +71,7 @@ export class AquaBeraBeramoAdapter extends BaseAdapter {
                     functionName: "totalSupply",
                 })) as bigint;
 
-                const [totalAmount0, totalAmount1] = (await publicClient.readContract({
+                const [totalAmount0, totalAmount1] = (await this.publicClient.readContract({
                     address: token.address as `0x${string}`,
                     abi: [
                         {
@@ -95,7 +88,7 @@ export class AquaBeraBeramoAdapter extends BaseAdapter {
                     functionName: "getTotalAmounts",
                 })) as [bigint, bigint];
 
-                const token0_addr = (await publicClient.readContract({
+                const token0_addr = (await this.publicClient.readContract({
                     address: token.address as `0x${string}`,
                     abi: [
                         {
@@ -109,7 +102,7 @@ export class AquaBeraBeramoAdapter extends BaseAdapter {
                     functionName: "token0",
                 })) as string;
 
-                const token1_addr = (await publicClient.readContract({
+                const token1_addr = (await this.publicClient.readContract({
                     address: token.address as `0x${string}`,
                     abi: [
                         {

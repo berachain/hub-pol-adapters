@@ -1,6 +1,4 @@
 import { BaseAdapter, Token, TokenPrice } from "../../types";
-import { berachain } from "viem/chains";
-import { createPublicClient, http } from "viem";
 
 // GraphQL endpoint for WinnieSwap Indexer (Ponder)
 const WINNIESWAP_GRAPHQL_URL = "https://sub.winnieswap.com/";
@@ -116,16 +114,11 @@ export class WinnieSwapAdapter extends BaseAdapter {
      * Price = (totalAmount0 * price0 + totalAmount1 * price1) / totalSupply
      */
     async getRewardVaultStakingTokenPrices(stakingTokens: Token[]): Promise<TokenPrice[]> {
-        const publicClient = createPublicClient({
-            chain: berachain,
-            transport: http("https://rpc.berachain.com"),
-        });
-
         const prices = await Promise.all(
             stakingTokens.map(async (token) => {
                 try {
                     // Get total supply of the vault token
-                    const totalSupply = (await publicClient.readContract({
+                    const totalSupply = (await this.publicClient.readContract({
                         address: token.address as `0x${string}`,
                         abi: [
                             {
@@ -152,7 +145,7 @@ export class WinnieSwapAdapter extends BaseAdapter {
                     }
 
                     // Get underlying balances (amount0, amount1)
-                    const [totalAmount0, totalAmount1] = (await publicClient.readContract({
+                    const [totalAmount0, totalAmount1] = (await this.publicClient.readContract({
                         address: token.address as `0x${string}`,
                         abi: [
                             {
@@ -178,7 +171,7 @@ export class WinnieSwapAdapter extends BaseAdapter {
                     })) as [bigint, bigint];
 
                     // Get token0 and token1 addresses
-                    const token0_addr = (await publicClient.readContract({
+                    const token0_addr = (await this.publicClient.readContract({
                         address: token.address as `0x${string}`,
                         abi: [
                             {
@@ -192,7 +185,7 @@ export class WinnieSwapAdapter extends BaseAdapter {
                         functionName: "token0",
                     })) as string;
 
-                    const token1_addr = (await publicClient.readContract({
+                    const token1_addr = (await this.publicClient.readContract({
                         address: token.address as `0x${string}`,
                         abi: [
                             {
