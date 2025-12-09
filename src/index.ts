@@ -18,7 +18,7 @@ import { TermMaxVaultAdapter } from "./vaults/termmax";
 import { BaseAdapter } from "./types";
 import { WberaLBGTVaultAdapter } from "./vaults/examples/wbera-lbgt-vault-adapter";
 
-export const adapters: (typeof BaseAdapter)[] = [
+export const adapters = [
     SNECTVaultAdapter,
     AquaBeraBeramoAdapter,
     AquaBeraHenloAdapter,
@@ -37,4 +37,4 @@ export const adapters: (typeof BaseAdapter)[] = [
     WinnieSwapAdapter,
     WberaLBGTVaultAdapter,
     TermMaxVaultAdapter,
-];
+] as const satisfies (typeof BaseAdapter)[];
