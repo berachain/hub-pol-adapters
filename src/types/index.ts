@@ -21,22 +21,13 @@ export interface TokenPrice {
  * Each protocol implements these methods to interact with their token ecosystem
  */
 export abstract class BaseAdapter {
-    name: string;
-    description?: string;
-    enabled: boolean;
+    abstract readonly name: string;
+    abstract readonly description?: string;
+    enabled: boolean = true;
 
     protected publicClient: PublicClient;
 
-    constructor(config: {
-        name: string;
-        description?: string;
-        enabled?: boolean;
-        publicClient?: PublicClient;
-    }) {
-        this.name = config.name;
-        this.description = config.description;
-        this.enabled = config.enabled ?? true;
-
+    constructor(config: { publicClient?: PublicClient }) {
         this.publicClient =
             config.publicClient ??
             createPublicClient({

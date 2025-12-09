@@ -82,84 +82,75 @@ Your adapter must extend the `BaseAdapter` class and implement all required meth
 import { BaseAdapter, Token, TokenPrice } from "../../types";
 
 export class YourProtocolAdapter extends BaseAdapter {
-  constructor() {
-    super({
-        name: "Give a name",
-        description?: "Give a description",
-        enabled?: true,
-    });
-  }
+    readonly name = "Give a name";
+    readonly description = "Give a description";
 
-  /**
-   * Get staking tokens from reward vaults
-   * These tokens are used to calculate TVL for APR calculations
-   */
-  async getRewardVaultStakingTokens(): Promise<Token[]> {
-    // Implement to return staking tokens
-    // Example:
-    return [
-      {
-        address: "0xv1...",
-        symbol: "VAULT1-LP-TOKEN",
-        name: "Vault1 LP Token",
-        decimals: 18,
-        chainId: 80094,
-      },
-      {
-        address: "0xv2...",
-        symbol: "VAULT2-LP-TOKEN",
-        name: "Vault2 LP Token",
-        decimals: 18,
-        chainId: 80094,
-      },
-    ];
-  }
+    /**
+     * Get staking tokens from reward vaults
+     * These tokens are used to calculate TVL for APR calculations
+     */
+    async getRewardVaultStakingTokens(): Promise<Token[]> {
+        // Implement to return staking tokens
+        // Example:
+        return [
+            {
+                address: "0xv1...",
+                symbol: "VAULT1-LP-TOKEN",
+                name: "Vault1 LP Token",
+                decimals: 18,
+                chainId: 80094,
+            },
+            {
+                address: "0xv2...",
+                symbol: "VAULT2-LP-TOKEN",
+                name: "Vault2 LP Token",
+                decimals: 18,
+                chainId: 80094,
+            },
+        ];
+    }
 
-  /**
-   * Get prices for staking tokens
-   * These prices are used to calculate TVL for APR calculations
-   */
-  async getRewardVaultStakingTokenPrices(
-    stakingTokens: Token[]
-  ): Promise<TokenPrice[]> {
-    // Implement to return token prices
-    // Example:
-    return [
-      {
-        address: "0xv1...",
-        price: 1.23,
-        timestamp: Date.now(),
-      },
-      {
-        address: "0xv2...",
-        price: 4.56,
-        timestamp: Date.now(),
-      },
-    ];
-  }
+    /**
+     * Get prices for staking tokens
+     * These prices are used to calculate TVL for APR calculations
+     */
+    async getRewardVaultStakingTokenPrices(stakingTokens: Token[]): Promise<TokenPrice[]> {
+        // Implement to return token prices
+        // Example:
+        return [
+            {
+                address: "0xv1...",
+                price: 1.23,
+                timestamp: Date.now(),
+            },
+            {
+                address: "0xv2...",
+                price: 4.56,
+                timestamp: Date.now(),
+            },
+        ];
+    }
 
-  /**
-   * Get incentive/reward tokens
-   * These tokens are used to calculate reward value for APR calculations
-   */
-  async getIncentiveTokens(): Promise<Token[]> {
-    // Implement to return incentive tokens
-    return [];
-  }
+    /**
+     * Get incentive/reward tokens
+     * These tokens are used to calculate reward value for APR calculations
+     */
+    async getIncentiveTokens(): Promise<Token[]> {
+        // Implement to return incentive tokens
+        return [];
+    }
 
-  /**
-   * Get prices for incentive tokens
-   * These prices are used to calculate reward value for APR calculations
-   *
-   * Note: You don't need to implement this if your token is already listed on Hub or Kodiak,
-   * or if it's tracked by Coingecko (in which case, add it to the Berachain Metadata repo)
-   */
-  async getIncentiveTokenPrices(
-    incentiveTokens: Token[]
-  ): Promise<TokenPrice[]> {
-    // Implement to return incentive token prices
-    return [];
-  }
+    /**
+     * Get prices for incentive tokens
+     * These prices are used to calculate reward value for APR calculations
+     *
+     * Note: You don't need to implement this if your token is already listed on Hub or Kodiak,
+     * or if it's tracked by Coingecko (in which case, add it to the Berachain Metadata repo)
+     */
+    async getIncentiveTokenPrices(incentiveTokens: Token[]): Promise<TokenPrice[]> {
+        // Implement to return incentive token prices
+        return [];
+    }
 }
 ```
 

@@ -3,13 +3,8 @@ import { fetchTokenPrice } from "../examples/hub-api";
 import { parseEther } from "viem";
 
 export class BendVaultAdapter extends BaseAdapter {
-    constructor() {
-        super({
-            name: "BendVaultAdapter",
-            description: "BendVaultAdapter is an adapter for Bend's vaults",
-            enabled: true,
-        });
-    }
+    readonly name = "BendVaultAdapter";
+    readonly description = "BendVaultAdapter is an adapter for Bend's vaults";
 
     /**
      * Get staking tokens from reward vaults

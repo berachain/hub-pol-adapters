@@ -1,14 +1,9 @@
 import { BaseAdapter, Token, TokenPrice } from "../../types";
 
 export class WewberaVaultAdapter extends BaseAdapter {
-    constructor() {
-        super({
-            name: "WewberaVaultAdapter",
-            description:
-                "WewberaVaultAdapter is an adapter for the webera-vault-wbera at https://hub.berachain.com/vaults/0x5e747644dd7a3e58485db8e836ca7654242dae2a/",
-            enabled: true,
-        });
-    }
+    readonly name = "WewberaVaultAdapter";
+    readonly description =
+        "WewberaVaultAdapter is an adapter for the webera-vault-wbera at https://hub.berachain.com/vaults/0x5e747644dd7a3e58485db8e836ca7654242dae2a/";
 
     /**
      * Get staking tokens from reward vaults

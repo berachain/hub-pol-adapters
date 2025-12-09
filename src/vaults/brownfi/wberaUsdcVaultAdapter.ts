@@ -2,14 +2,9 @@ import { BaseAdapter, Token, TokenPrice } from "../../types";
 import { fetchTokenPrice } from "../examples/hub-api";
 
 export class WberaUsdcVaultAdapter extends BaseAdapter {
-    constructor() {
-        super({
-            name: "WberaUsdcVaultAdapter",
-            description:
-                "WberaUsdcVaultAdapter is an adapter for the Wbera | USDC.e Vault at https://hub.berachain.com/earn/0x519cef5cc2913bcefdd03d0a22601c19794c4581/",
-            enabled: true,
-        });
-    }
+    readonly name = "WberaUsdcVaultAdapter";
+    readonly description =
+        "WberaUsdcVaultAdapter is an adapter for the Wbera | USDC.e Vault at https://hub.berachain.com/earn/0x519cef5cc2913bcefdd03d0a22601c19794c4581/";
 
     async getRewardVaultStakingTokens(): Promise<Token[]> {
         return [

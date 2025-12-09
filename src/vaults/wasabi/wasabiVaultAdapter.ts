@@ -3,14 +3,9 @@ import { fetchTokenPrice } from "../examples/hub-api";
 import { parseEther } from "viem";
 
 export class WasabiVaultAdapter extends BaseAdapter {
-    constructor() {
-        super({
-            name: "WasabiVaultAdapter",
-            description:
-                "WasabiVaultAdapter is an adapter for Wasabi's sWBERA and sHONEY vaults at https://hub.berachain.com/vaults/0x4ea84882228a5c881675151e951235e45256a484/ and https://hub.berachain.com/vaults/0x49fcaa48e59e3d634ae6c6953cc30ce953dfba2c/",
-            enabled: true,
-        });
-    }
+    readonly name = "WasabiVaultAdapter";
+    readonly description =
+        "WasabiVaultAdapter is an adapter for Wasabi's sWBERA and sHONEY vaults at https://hub.berachain.com/vaults/0x4ea84882228a5c881675151e951235e45256a484/ and https://hub.berachain.com/vaults/0x49fcaa48e59e3d634ae6c6953cc30ce953dfba2c/";
 
     /**
      * Get staking tokens from reward vaults

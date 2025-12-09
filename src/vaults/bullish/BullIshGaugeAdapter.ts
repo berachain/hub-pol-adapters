@@ -2,13 +2,8 @@ import { BaseAdapter, Token, TokenPrice } from "../../types";
 import { fetchTokenPrice } from "../examples/hub-api";
 
 export class BullIshGaugeAdapter extends BaseAdapter {
-    constructor() {
-        super({
-            name: "BullIshGaugeAdapter",
-            description: "Adapter for Bull Ish gauge APR calculations",
-            enabled: true,
-        });
-    }
+    readonly name = "BullIshGaugeAdapter";
+    readonly description = "Adapter for Bull Ish gauge APR calculations";
 
     async getRewardVaultStakingTokens(): Promise<Token[]> {
         return [

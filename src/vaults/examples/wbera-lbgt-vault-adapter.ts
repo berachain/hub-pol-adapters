@@ -2,14 +2,9 @@ import { BaseAdapter, Token, TokenPrice } from "../../types";
 import { fetchPoolData, fetchTokenPrice } from "./hub-api";
 
 export class WberaLBGTVaultAdapter extends BaseAdapter {
-    constructor() {
-        super({
-            name: "WberaLBGTVaultAdapter",
-            description:
-                "WberaLBGTVaultAdapter is an adapter for the Wbera | LBGT Vault at https://hub.berachain.com/vaults/0xe8ed00b1b142e8d84ef773c4fccaa18682d5a401/",
-            enabled: true,
-        });
-    }
+    readonly name = "WberaLBGTVaultAdapter";
+    readonly description =
+        "WberaLBGTVaultAdapter is an adapter for the Wbera | LBGT Vault at https://hub.berachain.com/vaults/0xe8ed00b1b142e8d84ef773c4fccaa18682d5a401/";
 
     async getRewardVaultStakingTokens(): Promise<Token[]> {
         return [
