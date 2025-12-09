@@ -63,14 +63,8 @@ const TOKEN_PRICE_QUERY = `
 `;
 
 export class WinnieSwapAdapter extends BaseAdapter {
-    constructor() {
-        super({
-            name: "WinnieSwap",
-            description:
-                "WinnieSwap is a DeFi protocol on Berachain with automated liquidity management through Sticky Vaults (Uniswap V3 + Arrakis V1 architecture)",
-            enabled: true,
-        });
-    }
+    readonly name = "WinnieSwapAdapter";
+    readonly description = "WinnieSwapAdapter is an adapter for WinnieSwap's Sticky Vaults";
 
     /**
      * Get staking tokens from WinnieSwap Sticky Vaults

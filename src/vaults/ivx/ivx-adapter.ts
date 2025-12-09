@@ -7,13 +7,8 @@ interface SupportedToken {
 }
 
 export class IVXVaultAdapter extends BaseAdapter {
-    constructor() {
-        super({
-            name: "IVXVaultAdapter",
-            description: "IVXVaultAdapter is an adapter",
-            enabled: true,
-        });
-    }
+    readonly name = "IVXVaultAdapter";
+    readonly description = "IVXVaultAdapter is an adapter";
 
     /**
      * Get staking tokens from reward vaults

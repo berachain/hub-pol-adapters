@@ -264,13 +264,8 @@ const concreteVaults: Array<ConcreteVault> = [
 ];
 
 export class ConcreteVaultAdapter extends BaseAdapter {
-    constructor() {
-        super({
-            name: "ConcreteVaultAdapter",
-            description: "Consolidated adapter for all Concrete Berachain vaults.",
-            enabled: true,
-        });
-    }
+    readonly name = "ConcreteVaultAdapter";
+    readonly description = "Consolidated adapter for all Concrete Berachain vaults.";
 
     async getRewardVaultStakingTokens(): Promise<Token[]> {
         return concreteVaults.map((v) => v.stakingToken);

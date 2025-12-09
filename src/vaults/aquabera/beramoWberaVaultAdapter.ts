@@ -23,14 +23,9 @@ const PRICE_QUERY = `
 `;
 
 export class AquaBeraBeramoAdapter extends BaseAdapter {
-    constructor() {
-        super({
-            name: "AquaBera",
-            description:
-                "Aquabera makes managing, growing, and launching crypto on Berachain simple, safe, and rewarding.",
-            enabled: true,
-        });
-    }
+    readonly name = "AquaBera";
+    readonly description =
+        "Aquabera makes managing, growing, and launching crypto on Berachain simple, safe, and rewarding.";
 
     /**
      * Get staking tokens from reward vaults

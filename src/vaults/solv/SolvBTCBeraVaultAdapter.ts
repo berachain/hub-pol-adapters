@@ -2,14 +2,9 @@ import { BaseAdapter, Token, TokenPrice } from "../../types";
 import { fetchTokenPrice } from "../examples/hub-api";
 
 export class SolvBTCBeraVaultAdapter extends BaseAdapter {
-    constructor() {
-        super({
-            name: "SolvBTCBeraVaultAdapter",
-            description:
-                "SolvBTCBeraVaultAdapter is an adapter for Solv's SolvBTC.BERA vaults at https://hub.berachain.com/vaults/0x9a5620309c20b8beca1d59c6def1e73ac6cba45d/",
-            enabled: true,
-        });
-    }
+    readonly name = "SolvBTCBeraVaultAdapter";
+    readonly description =
+        "SolvBTCBeraVaultAdapter is an adapter for Solv's SolvBTC.BERA vaults at https://hub.berachain.com/vaults/0x9a5620309c20b8beca1d59c6def1e73ac6cba45d/";
 
     /**
      * Get staking tokens from reward vaults

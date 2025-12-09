@@ -2,14 +2,9 @@ import { BaseAdapter, Token, TokenPrice } from "../../types";
 import { fetchTokenPrice } from "../examples/hub-api";
 
 export class SxVaultAdapter extends BaseAdapter {
-    constructor() {
-        super({
-            name: "SxVaultAdapter",
-            description:
-                "SxVaultAdapter is an adapter for SX Bet's SXBRT vault at https://hub.berachain.com/vaults/0xd1dca482d1af3c2e23749a965db3a74c4e29b928/",
-            enabled: true,
-        });
-    }
+    readonly name = "SxVaultAdapter";
+    readonly description =
+        "SxVaultAdapter is an adapter for SX Bet's SXBRT vault at https://hub.berachain.com/vaults/0xd1dca482d1af3c2e23749a965db3a74c4e29b928/";
 
     /**
      * Get staking tokens from reward vaults

@@ -3,13 +3,8 @@ import { fetchTokenPrice } from "../examples/hub-api";
 import { parseEther } from "viem";
 
 export class TermMaxVaultAdapter extends BaseAdapter {
-    constructor() {
-        super({
-            name: "TermMaxVaultAdapter",
-            description: "TermMaxVaultAdapter is an adapter for TermMax's ERC4626 vaults",
-            enabled: true,
-        });
-    }
+    readonly name = "TermMaxVaultAdapter";
+    readonly description = "TermMaxVaultAdapter is an adapter for TermMax's ERC4626 vaults";
 
     /**
      * Get staking tokens from reward vaults

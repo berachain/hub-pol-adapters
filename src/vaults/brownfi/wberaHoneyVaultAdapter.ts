@@ -2,14 +2,9 @@ import { BaseAdapter, Token, TokenPrice } from "../../types";
 import { fetchTokenPrice } from "../examples/hub-api";
 
 export class WberaHoneyVaultAdapter extends BaseAdapter {
-    constructor() {
-        super({
-            name: "WberaHoneyVaultAdapter",
-            description:
-                "WberaHoneyVaultAdapter is an adapter for the Wbera | Honey Vault at https://hub.berachain.com/earn/0x2cb34eeadb1e7ae9cc7bafb84a189e9d921e193a/",
-            enabled: true,
-        });
-    }
+    readonly name = "WberaHoneyVaultAdapter";
+    readonly description =
+        "WberaHoneyVaultAdapter is an adapter for the Wbera | Honey Vault at https://hub.berachain.com/earn/0x2cb34eeadb1e7ae9cc7bafb84a189e9d921e193a/";
 
     async getRewardVaultStakingTokens(): Promise<Token[]> {
         return [

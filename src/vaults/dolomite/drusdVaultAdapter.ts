@@ -1,14 +1,9 @@
 import { BaseAdapter, Token, TokenPrice } from "../../types";
 
 export class DRUSDVaultAdapter extends BaseAdapter {
-    constructor() {
-        super({
-            name: "drUSDVaultAdapter",
-            description:
-                "drUSDVaultAdapter is an adapter for the drUSD Vault at https://hub.berachain.com/vaults/0x9136df2daabe52a97340cce8c53d4c1314d52c18/",
-            enabled: true,
-        });
-    }
+    readonly name = "drUSDVaultAdapter";
+    readonly description =
+        "drUSDVaultAdapter is an adapter for the drUSD Vault at https://hub.berachain.com/vaults/0x9136df2daabe52a97340cce8c53d4c1314d52c18/";
 
     /**
      * Get staking tokens from reward vaults
