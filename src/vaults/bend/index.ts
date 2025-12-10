@@ -75,7 +75,6 @@ export class BendVaultAdapter extends BaseAdapter {
      * These prices are used to calculate TVL for APR calculations
      */
     async getRewardVaultStakingTokenPrices(stakingTokens: Token[]): Promise<TokenPrice[]> {
-
         const tokensWithDataResults = await Promise.allSettled(
             stakingTokens.map(async (token: Token) => {
                 // Perform individual calls to get the underlying asset, totalSupply and totalAssets
