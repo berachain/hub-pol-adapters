@@ -1,10 +1,56 @@
 import { BaseAdapter, Token, TokenPrice } from "../../types";
 import { fetchTokenPrice } from "../examples/hub-api";
+
 import { parseEther } from "viem";
+import { gql } from "graphql-request";
+
+const BERACHAIN_API_URL = "https://api.berachain.com/";
 
 export class BendVaultAdapter extends BaseAdapter {
     readonly name = "BendVaultAdapter";
     readonly description = "BendVaultAdapter is an adapter for Bend's vaults";
+
+    BEND_TOKENS_QUERY = gql`
+        query GetBendStakingTokens {
+            polGetRewardVaults(where: { protocolsIn: ["Bend"], includeNonWhitelisted: true }) {
+                vaults {
+                    stakingToken {
+                        address
+                        symbol
+                        name
+                        decimals
+                        chainId
+                    }
+                }
+            }
+        }
+    `;
+
+    public async getBendStakingTokens(): Promise<string[]> {
+        try {
+            const response = await fetch(BERACHAIN_API_URL, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    query: this.BEND_TOKENS_QUERY,
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            return data.data.polGetRewardVaults.vaults.map(
+                (vault: { stakingToken: Token }) => vault.stakingToken
+            );
+        } catch (error) {
+            console.error("Error fetching bend staking tokens:", error);
+            throw error;
+        }
+    }
 
     /**
      * Get staking tokens from reward vaults
@@ -29,50 +75,86 @@ export class BendVaultAdapter extends BaseAdapter {
      * These prices are used to calculate TVL for APR calculations
      */
     async getRewardVaultStakingTokenPrices(stakingTokens: Token[]): Promise<TokenPrice[]> {
-        const prices = await Promise.all(
-            stakingTokens.map(async (token) => {
+        const tokensWithDataResults = await Promise.allSettled(
+            stakingTokens.map(async (token: Token) => {
                 // Perform individual calls to get the underlying asset, totalSupply and totalAssets
-                const ratio = await this.publicClient.readContract({
-                    address: token.address as `0x${string}`,
-                    args: [parseEther("1")],
-                    abi: [
-                        {
-                            inputs: [{ internalType: "uint256", name: "shares", type: "uint256" }],
-                            name: "convertToAssets",
-                            outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-                            stateMutability: "view",
-                            type: "function",
-                        },
-                    ],
-                    functionName: "convertToAssets",
-                });
+                const [ratio, underlyingAsset] = await Promise.all([
+                    this.publicClient.readContract({
+                        address: token.address as `0x${string}`,
+                        args: [parseEther("1")],
+                        abi: [
+                            {
+                                inputs: [
+                                    { internalType: "uint256", name: "shares", type: "uint256" },
+                                ],
+                                name: "convertToAssets",
+                                outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
+                                stateMutability: "view",
+                                type: "function",
+                            },
+                        ],
+                        functionName: "convertToAssets",
+                    }),
+                    this.publicClient.readContract({
+                        address: token.address as `0x${string}`,
+                        abi: [
+                            {
+                                type: "function",
+                                name: "asset",
+                                inputs: [],
+                                outputs: [{ name: "", type: "address" }],
+                                stateMutability: "view",
+                            },
+                        ],
+                        functionName: "asset",
+                    }),
+                ]);
 
-                const underlyingAsset = await this.publicClient.readContract({
-                    address: token.address as `0x${string}`,
-                    abi: [
-                        {
-                            type: "function",
-                            name: "asset",
-                            inputs: [],
-                            outputs: [{ name: "", type: "address" }],
-                            stateMutability: "view",
-                        },
-                    ],
-                    functionName: "asset",
-                });
-
-                const assetPrice = (await fetchTokenPrice([underlyingAsset]))[0].price;
-
-                const price = ratio * parseEther(assetPrice.toString());
-
-                return {
-                    address: token.address,
-                    price: Number(price) / 1e18 / 1e18, // Convert from bigint to number and adjust decimals
-                    timestamp: Date.now(),
-                    chainId: token.chainId,
-                };
+                return { token, ratio, underlyingAsset };
             })
         );
+
+        const tokensWithData = tokensWithDataResults
+            .filter(
+                (
+                    result
+                ): result is PromiseFulfilledResult<{
+                    token: Token;
+                    ratio: bigint;
+                    underlyingAsset: `0x${string}`;
+                }> => {
+                    if (result.status === "fulfilled") return true;
+
+                    console.error("Error fetching bend staking token data:", result.reason);
+                    return false;
+                }
+            )
+            .map((result) => result.value);
+
+        const underlyingAssets = tokensWithData.map(({ underlyingAsset }) => underlyingAsset);
+
+        const underlyingAssetsPrices = await fetchTokenPrice(underlyingAssets);
+
+        const prices = tokensWithData.map(({ token, ratio, underlyingAsset }) => {
+            const assetPrice = underlyingAssetsPrices.find(
+                ({ address }) => address.toLowerCase() === underlyingAsset.toLowerCase()
+            )?.price;
+
+            if (!assetPrice) {
+                throw new Error(
+                    `Failed to find token price for underlying token: ${underlyingAsset}`
+                );
+            }
+
+            const price = ratio * parseEther(assetPrice.toString());
+
+            return {
+                address: token.address,
+                price: Number(price) / 1e18 / 1e18, // Convert from bigint to number and adjust decimals
+                timestamp: Date.now(),
+                chainId: token.chainId,
+            };
+        });
 
         return prices;
     }
