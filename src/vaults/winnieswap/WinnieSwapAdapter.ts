@@ -112,19 +112,98 @@ export class WinnieSwapAdapter extends BaseAdapter {
             stakingTokens.map(async (token) => {
                 try {
                     // Get total supply of the vault token
-                    const totalSupply = (await this.publicClient.readContract({
-                        address: token.address as `0x${string}`,
-                        abi: [
-                            {
-                                type: "function",
-                                name: "totalSupply",
-                                inputs: [],
-                                outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-                                stateMutability: "view",
-                            },
-                        ],
-                        functionName: "totalSupply",
-                    })) as bigint;
+
+                    const [totalSupply, token0_addr, token1_addr, [totalAmount0, totalAmount1]] =
+                        await this.publicClient.multicall({
+                            allowFailure: false,
+                            contracts: [
+                                {
+                                    address: token.address as `0x${string}`,
+                                    abi: [
+                                        {
+                                            type: "function",
+                                            name: "totalSupply",
+                                            inputs: [],
+                                            outputs: [
+                                                {
+                                                    internalType: "uint256",
+                                                    name: "",
+                                                    type: "uint256",
+                                                },
+                                            ],
+                                            stateMutability: "view",
+                                        },
+                                    ],
+                                    functionName: "totalSupply",
+                                    args: [],
+                                },
+                                {
+                                    address: token.address as `0x${string}`,
+                                    abi: [
+                                        {
+                                            type: "function",
+                                            name: "token0",
+                                            inputs: [],
+                                            outputs: [
+                                                {
+                                                    internalType: "address",
+                                                    name: "",
+                                                    type: "address",
+                                                },
+                                            ],
+                                            stateMutability: "view",
+                                        },
+                                    ],
+                                    functionName: "token0",
+                                    args: [],
+                                },
+                                {
+                                    address: token.address as `0x${string}`,
+                                    abi: [
+                                        {
+                                            type: "function",
+                                            name: "token1",
+                                            inputs: [],
+                                            outputs: [
+                                                {
+                                                    internalType: "address",
+                                                    name: "",
+                                                    type: "address",
+                                                },
+                                            ],
+                                            stateMutability: "view",
+                                        },
+                                    ],
+                                    functionName: "token1",
+                                    args: [],
+                                },
+                                {
+                                    address: token.address as `0x${string}`,
+                                    abi: [
+                                        {
+                                            type: "function",
+                                            name: "getUnderlyingBalances",
+                                            inputs: [],
+                                            outputs: [
+                                                {
+                                                    internalType: "uint256",
+                                                    name: "amount0Current",
+                                                    type: "uint256",
+                                                },
+                                                {
+                                                    internalType: "uint256",
+                                                    name: "amount1Current",
+                                                    type: "uint256",
+                                                },
+                                            ],
+                                            stateMutability: "view",
+                                        },
+                                    ],
+                                    functionName: "getUnderlyingBalances",
+                                    args: [],
+                                },
+                            ],
+                        });
 
                     if (totalSupply === 0n) {
                         console.warn(
@@ -137,61 +216,6 @@ export class WinnieSwapAdapter extends BaseAdapter {
                             chainId: 80094,
                         };
                     }
-
-                    // Get underlying balances (amount0, amount1)
-                    const [totalAmount0, totalAmount1] = (await this.publicClient.readContract({
-                        address: token.address as `0x${string}`,
-                        abi: [
-                            {
-                                type: "function",
-                                name: "getUnderlyingBalances",
-                                inputs: [],
-                                outputs: [
-                                    {
-                                        internalType: "uint256",
-                                        name: "amount0Current",
-                                        type: "uint256",
-                                    },
-                                    {
-                                        internalType: "uint256",
-                                        name: "amount1Current",
-                                        type: "uint256",
-                                    },
-                                ],
-                                stateMutability: "view",
-                            },
-                        ],
-                        functionName: "getUnderlyingBalances",
-                    })) as [bigint, bigint];
-
-                    // Get token0 and token1 addresses
-                    const token0_addr = (await this.publicClient.readContract({
-                        address: token.address as `0x${string}`,
-                        abi: [
-                            {
-                                type: "function",
-                                name: "token0",
-                                inputs: [],
-                                outputs: [{ internalType: "address", name: "", type: "address" }],
-                                stateMutability: "view",
-                            },
-                        ],
-                        functionName: "token0",
-                    })) as string;
-
-                    const token1_addr = (await this.publicClient.readContract({
-                        address: token.address as `0x${string}`,
-                        abi: [
-                            {
-                                type: "function",
-                                name: "token1",
-                                inputs: [],
-                                outputs: [{ internalType: "address", name: "", type: "address" }],
-                                stateMutability: "view",
-                            },
-                        ],
-                        functionName: "token1",
-                    })) as string;
 
                     // Fetch prices for token0 and token1 from Berachain API
                     const tokenPrices = await getTokenPrices([token0_addr, token1_addr]);
