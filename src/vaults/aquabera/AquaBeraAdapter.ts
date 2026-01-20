@@ -22,8 +22,8 @@ const PRICE_QUERY = `
   }
 `;
 
-export class AquaBeraHenloAdapter extends BaseAdapter {
-    readonly name = "AquaBera";
+export class AquaBeraAdapter extends BaseAdapter {
+    readonly name = "AquaBeraAdapter";
     readonly description =
         "Aquabera makes managing, growing, and launching crypto on Berachain simple, safe, and rewarding.";
 
@@ -33,8 +33,14 @@ export class AquaBeraHenloAdapter extends BaseAdapter {
      */
     async getRewardVaultStakingTokens(): Promise<Token[]> {
         // Implement to return staking tokens
-        // Example:
         return [
+            {
+                address: "0xf9845a03F7e6b06645A03a28b943C8A4B5fE7BCC",
+                symbol: "AB-KODIAK-WBERA-BERAMO",
+                name: "AquaBera Kodiak wBera Beramo LP Token",
+                decimals: 18,
+                chainId: 80094,
+            },
             {
                 address: "0x04fD6a7B02E2e48caedaD7135420604de5f834f8",
                 symbol: "AB-KODIAK-WBERA-HENLO",
