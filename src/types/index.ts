@@ -2,7 +2,7 @@ import { http, createPublicClient, PublicClient } from "viem";
 import { berachain } from "viem/chains";
 
 export interface Token {
-    address: string;
+    address: `0x${string}`;
     symbol: string;
     name: string;
     decimals: number;
@@ -10,7 +10,7 @@ export interface Token {
 }
 
 export interface TokenPrice {
-    address: string;
+    address: `0x${string}`;
     price: number;
     timestamp: number;
     chainId: number;
