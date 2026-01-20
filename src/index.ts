@@ -1,6 +1,5 @@
 import { AquaBeraAdapter } from "./vaults/aquabera/AquaBeraAdapter";
 
-
 import { ConcreteVaultAdapter } from "./vaults/concrete/concreteVaultsAdapter";
 import { SxVaultAdapter } from "./vaults/sx/sxVaultAdapter";
 import { BullIshGaugeAdapter } from "./vaults/bullish/BullIshGaugeAdapter";
