@@ -91,7 +91,7 @@ export class WinnieSwapAdapter extends BaseAdapter {
 
             // Convert vault data to Token format
             return vaults.map((vault) => ({
-                address: vault.id.toLowerCase(),
+                address: vault.id.toLowerCase() as `0x${string}`,
                 symbol: `${vault.poolRef.token0Ref.symbol}-${vault.poolRef.token1Ref.symbol}-${vault.poolRef.feeTier}`,
                 name: vault.name,
                 decimals: 18,
