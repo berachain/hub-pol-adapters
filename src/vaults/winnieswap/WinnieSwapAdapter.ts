@@ -1,4 +1,5 @@
 import { BaseAdapter, Token, TokenPrice } from "../../types";
+import { uniswapV3PoolAbi } from "../../utils/uniswapV3PoolAbi";
 
 // GraphQL endpoint for WinnieSwap Indexer (Ponder)
 const WINNIESWAP_GRAPHQL_URL = "https://sub.winnieswap.com/";
@@ -119,61 +120,19 @@ export class WinnieSwapAdapter extends BaseAdapter {
                             contracts: [
                                 {
                                     address: token.address as `0x${string}`,
-                                    abi: [
-                                        {
-                                            type: "function",
-                                            name: "totalSupply",
-                                            inputs: [],
-                                            outputs: [
-                                                {
-                                                    internalType: "uint256",
-                                                    name: "",
-                                                    type: "uint256",
-                                                },
-                                            ],
-                                            stateMutability: "view",
-                                        },
-                                    ],
+                                    abi: uniswapV3PoolAbi,
                                     functionName: "totalSupply",
                                     args: [],
                                 },
                                 {
                                     address: token.address as `0x${string}`,
-                                    abi: [
-                                        {
-                                            type: "function",
-                                            name: "token0",
-                                            inputs: [],
-                                            outputs: [
-                                                {
-                                                    internalType: "address",
-                                                    name: "",
-                                                    type: "address",
-                                                },
-                                            ],
-                                            stateMutability: "view",
-                                        },
-                                    ],
+                                    abi: uniswapV3PoolAbi,
                                     functionName: "token0",
                                     args: [],
                                 },
                                 {
                                     address: token.address as `0x${string}`,
-                                    abi: [
-                                        {
-                                            type: "function",
-                                            name: "token1",
-                                            inputs: [],
-                                            outputs: [
-                                                {
-                                                    internalType: "address",
-                                                    name: "",
-                                                    type: "address",
-                                                },
-                                            ],
-                                            stateMutability: "view",
-                                        },
-                                    ],
+                                    abi: uniswapV3PoolAbi,
                                     functionName: "token1",
                                     args: [],
                                 },

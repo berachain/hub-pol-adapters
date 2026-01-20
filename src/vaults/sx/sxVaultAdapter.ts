@@ -1,5 +1,4 @@
 import { BaseAdapter, Token, TokenPrice } from "../../types";
-import { fetchTokenPrice } from "../examples/hub-api";
 
 export class SxVaultAdapter extends BaseAdapter {
     readonly name = "SxVaultAdapter";
@@ -29,8 +28,9 @@ export class SxVaultAdapter extends BaseAdapter {
      * These prices are used to calculate TVL for APR calculations
      */
     async getRewardVaultStakingTokenPrices(stakingTokens: Token[]): Promise<TokenPrice[]> {
-        const beraPrice = (await fetchTokenPrice(["0x6969696969696969696969696969696969696969"]))[0]
-            .price;
+        const beraPrice = (
+            await this.fetchTokenPrice(["0x6969696969696969696969696969696969696969"])
+        )[0].price;
         const prices = await Promise.all(
             stakingTokens.map(async (token) => {
                 return {

@@ -1,5 +1,12 @@
 import { http, createPublicClient, PublicClient } from "viem";
 import { berachain } from "viem/chains";
+import { gql } from "graphql-request";
+
+interface TokenAndPrice {
+    address: string;
+    price: number;
+    updatedAt: number;
+}
 
 export interface Token {
     address: `0x${string}`;
@@ -26,14 +33,16 @@ export abstract class BaseAdapter {
     enabled: boolean = true;
 
     protected publicClient: PublicClient;
+    protected berachainApiUrl: string;
 
-    constructor(config: { publicClient?: PublicClient } = {}) {
+    constructor(config: { publicClient?: PublicClient; berachainApiUrl?: string } = {}) {
         this.publicClient =
             config.publicClient ??
             createPublicClient({
                 chain: berachain,
                 transport: http("https://rpc.berachain.com"),
             });
+        this.berachainApiUrl = config.berachainApiUrl ?? "https://api.berachain.com/";
     }
 
     /**
@@ -62,4 +71,42 @@ export abstract class BaseAdapter {
      * @returns Promise resolving to list of token prices
      */
     abstract getIncentiveTokenPrices(incentiveTokens: Token[]): Promise<TokenPrice[]>;
+
+    TOKEN_PRICE_QUERY = gql`
+        query ($tokens: [String!]!) {
+            tokenGetCurrentPrices(chains: [BERACHAIN], addressIn: $tokens) {
+                address
+                price
+                updatedAt
+            }
+        }
+    `;
+
+    async queryBerachainAPI(query: string, variables: Record<string, any>) {
+        return await fetch(this.berachainApiUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ query, variables }),
+        });
+    }
+
+    async fetchTokenPrice(tokens: string[]): Promise<TokenAndPrice[]> {
+        try {
+            const response = await this.queryBerachainAPI(this.TOKEN_PRICE_QUERY, {
+                tokens,
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            return data.data.tokenGetCurrentPrices;
+        } catch (error) {
+            console.error("Error fetching token price:", error);
+            throw error;
+        }
+    }
 }

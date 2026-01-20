@@ -1,4 +1,5 @@
 import { BaseAdapter, Token, TokenPrice } from "../../types";
+import { uniswapV3PoolAbi } from "../../utils/uniswapV3PoolAbi";
 
 const BERACHAIN_API_URL = "https://api.berachain.com/graphql";
 
@@ -58,64 +59,55 @@ export class AquaBeraAdapter extends BaseAdapter {
     async getRewardVaultStakingTokenPrices(stakingTokens: Token[]): Promise<TokenPrice[]> {
         const prices = await Promise.all(
             stakingTokens.map(async (token) => {
-                const totalSupply = (await this.publicClient.readContract({
-                    address: token.address as `0x${string}`,
-                    abi: [
-                        {
-                            type: "function",
-                            name: "totalSupply",
-                            inputs: [],
-                            outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-                            stateMutability: "view",
-                        },
-                    ],
-                    functionName: "totalSupply",
-                })) as bigint;
-
-                const [totalAmount0, totalAmount1] = (await this.publicClient.readContract({
-                    address: token.address as `0x${string}`,
-                    abi: [
-                        {
-                            type: "function",
-                            name: "getTotalAmounts",
-                            inputs: [],
-                            outputs: [
-                                { internalType: "uint256", name: "total0", type: "uint256" },
-                                { internalType: "uint256", name: "total1", type: "uint256" },
-                            ],
-                            stateMutability: "view",
-                        },
-                    ],
-                    functionName: "getTotalAmounts",
-                })) as [bigint, bigint];
-
-                const token0_addr = (await this.publicClient.readContract({
-                    address: token.address as `0x${string}`,
-                    abi: [
-                        {
-                            type: "function",
-                            name: "token0",
-                            inputs: [],
-                            outputs: [{ internalType: "address", name: "", type: "address" }],
-                            stateMutability: "view",
-                        },
-                    ],
-                    functionName: "token0",
-                })) as string;
-
-                const token1_addr = (await this.publicClient.readContract({
-                    address: token.address as `0x${string}`,
-                    abi: [
-                        {
-                            type: "function",
-                            name: "token1",
-                            inputs: [],
-                            outputs: [{ internalType: "address", name: "", type: "address" }],
-                            stateMutability: "view",
-                        },
-                    ],
-                    functionName: "token1",
-                })) as string;
+                const [totalSupply, [totalAmount0, totalAmount1], token0_addr, token1_addr] =
+                    await this.publicClient.multicall({
+                        allowFailure: false,
+                        contracts: [
+                            {
+                                address: token.address as `0x${string}`,
+                                abi: uniswapV3PoolAbi,
+                                functionName: "totalSupply",
+                                args: [],
+                            },
+                            {
+                                address: token.address as `0x${string}`,
+                                abi: [
+                                    {
+                                        type: "function",
+                                        name: "getTotalAmounts",
+                                        inputs: [],
+                                        outputs: [
+                                            {
+                                                internalType: "uint256",
+                                                name: "total0",
+                                                type: "uint256",
+                                            },
+                                            {
+                                                internalType: "uint256",
+                                                name: "total1",
+                                                type: "uint256",
+                                            },
+                                        ],
+                                        stateMutability: "view",
+                                    },
+                                ],
+                                functionName: "getTotalAmounts",
+                                args: [],
+                            },
+                            {
+                                address: token.address as `0x${string}`,
+                                abi: uniswapV3PoolAbi,
+                                functionName: "token0",
+                                args: [],
+                            },
+                            {
+                                address: token.address as `0x${string}`,
+                                abi: uniswapV3PoolAbi,
+                                functionName: "token1",
+                                args: [],
+                            },
+                        ],
+                    });
 
                 if (totalSupply === 0n)
                     throw new Error(
