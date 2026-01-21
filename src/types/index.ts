@@ -1,5 +1,12 @@
 import { http, createPublicClient, PublicClient } from "viem";
 import { berachain } from "viem/chains";
+import { gql } from "graphql-request";
+
+interface TokenAndPrice {
+    address: string;
+    price: number;
+    updatedAt: number;
+}
 
 export interface Token {
     address: `0x${string}`;
@@ -16,6 +23,8 @@ export interface TokenPrice {
     chainId: number;
 }
 
+export type GetTokenPrices = (tokens: string[]) => Promise<TokenAndPrice[]>;
+
 /**
  * Base adapter class that all protocol adapters must extend
  * Each protocol implements these methods to interact with their token ecosystem
@@ -26,14 +35,27 @@ export abstract class BaseAdapter {
     enabled: boolean = true;
 
     protected publicClient: PublicClient;
+    protected berachainApiUrl: string = "https://api.berachain.com/";
 
-    constructor(config: { publicClient?: PublicClient } = {}) {
+    private getTokenPrices?: GetTokenPrices;
+
+    constructor(
+        config: {
+            publicClient?: PublicClient;
+            /**
+             * Function to get token prices from an external source
+             * If not provided, the adapter will use the Berachain API to get token prices
+             */
+            getTokenPrices?: GetTokenPrices;
+        } = {}
+    ) {
         this.publicClient =
             config.publicClient ??
             createPublicClient({
                 chain: berachain,
                 transport: http("https://rpc.berachain.com"),
             });
+        this.getTokenPrices = config.getTokenPrices;
     }
 
     /**
@@ -62,4 +84,46 @@ export abstract class BaseAdapter {
      * @returns Promise resolving to list of token prices
      */
     abstract getIncentiveTokenPrices(incentiveTokens: Token[]): Promise<TokenPrice[]>;
+
+    TOKEN_PRICE_QUERY = gql`
+        query ($tokens: [String!]!) {
+            tokenGetCurrentPrices(chains: [BERACHAIN], addressIn: $tokens) {
+                address
+                price
+                updatedAt
+            }
+        }
+    `;
+
+    async queryBerachainAPI(query: string, variables: Record<string, unknown>) {
+        return await fetch(this.berachainApiUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ query, variables }),
+        });
+    }
+
+    async fetchTokenPrice(tokens: string[]): Promise<TokenAndPrice[]> {
+        if (this.getTokenPrices) {
+            return await this.getTokenPrices(tokens);
+        }
+
+        try {
+            const response = await this.queryBerachainAPI(this.TOKEN_PRICE_QUERY, {
+                tokens,
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            return data.data.tokenGetCurrentPrices;
+        } catch (error) {
+            console.error("Error fetching token price:", error);
+            throw error;
+        }
+    }
 }

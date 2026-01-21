@@ -1,5 +1,5 @@
+import { erc20Abi } from "viem";
 import { BaseAdapter, Token, TokenPrice } from "../../types";
-import { fetchTokenPrice } from "../examples/hub-api";
 
 interface SupportedToken {
     readonly address: string;
@@ -98,7 +98,7 @@ export class IVXVaultAdapter extends BaseAdapter {
     }
 
     private async _fetchTokensPrices(tokens: string[]): Promise<number[]> {
-        const tokensPrices = await fetchTokenPrice(tokens);
+        const tokensPrices = await this.fetchTokenPrice(tokens);
         const priceMap = new Map(
             tokensPrices.map((priceObj) => [priceObj.address.toLowerCase(), Number(priceObj.price)])
         );
@@ -119,25 +119,18 @@ export class IVXVaultAdapter extends BaseAdapter {
     ): Promise<bigint[]> {
         // Get balances of tokens in the vault
 
-        const balances: bigint[] = [];
-        for (const token of tokens) {
-            const balance = (await this.publicClient.readContract({
-                address: token as `0x${string}`,
-                abi: [
-                    {
-                        type: "function",
-                        name: "balanceOf",
-                        inputs: [{ name: "account", type: "address", internalType: "address" }],
-                        outputs: [{ name: "", type: "uint256", internalType: "uint256" }],
-                        stateMutability: "view",
-                    },
-                ],
-                functionName: "balanceOf",
-                args: [vaultAddress],
-            })) as bigint;
-            balances.push(balance);
-        }
-        return balances;
+        return this.publicClient.multicall({
+            allowFailure: false,
+            contracts: tokens.map(
+                (token) =>
+                    ({
+                        address: token as `0x${string}`,
+                        abi: erc20Abi,
+                        functionName: "balanceOf",
+                        args: [vaultAddress],
+                    }) as const
+            ),
+        });
     }
     /**
      * Get incentive/reward tokens

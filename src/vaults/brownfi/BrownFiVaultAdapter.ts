@@ -1,6 +1,7 @@
 import { erc20Abi, formatUnits } from "viem";
 import { BaseAdapter, Token, TokenPrice } from "../../types";
-import { fetchTokenPrice } from "../examples/hub-api";
+
+import { uniswapV3PoolAbi } from "../../utils/uniswapV3PoolAbi";
 
 export class BrownFiVaultAdapter extends BaseAdapter {
     readonly name = "BrownFiVaultAdapter";
@@ -33,57 +34,27 @@ export class BrownFiVaultAdapter extends BaseAdapter {
                     allowFailure: false,
                     contracts: [
                         {
-                            address: token.address as `0x${string}`,
-                            abi: [
-                                {
-                                    type: "function",
-                                    name: "totalSupply",
-                                    inputs: [],
-                                    outputs: [
-                                        { internalType: "uint256", name: "", type: "uint256" },
-                                    ],
-                                    stateMutability: "view",
-                                },
-                            ],
+                            address: token.address,
+                            abi: uniswapV3PoolAbi,
                             functionName: "totalSupply",
                             args: [],
                         },
                         {
-                            address: token.address as `0x${string}`,
-                            abi: [
-                                {
-                                    type: "function",
-                                    name: "token0",
-                                    inputs: [],
-                                    outputs: [
-                                        { internalType: "address", name: "", type: "address" },
-                                    ],
-                                    stateMutability: "view",
-                                },
-                            ],
+                            address: token.address,
+                            abi: uniswapV3PoolAbi,
                             functionName: "token0",
                             args: [],
                         },
                         {
-                            address: token.address as `0x${string}`,
-                            abi: [
-                                {
-                                    type: "function",
-                                    name: "token1",
-                                    inputs: [],
-                                    outputs: [
-                                        { internalType: "address", name: "", type: "address" },
-                                    ],
-                                    stateMutability: "view",
-                                },
-                            ],
+                            address: token.address,
+                            abi: uniswapV3PoolAbi,
                             functionName: "token1",
                             args: [],
                         },
                     ],
                 });
 
-                const tokenPrices = await fetchTokenPrice([token0_addr, token1_addr]);
+                const tokenPrices = await this.fetchTokenPrice([token0_addr, token1_addr]);
 
                 const token0_price = tokenPrices.find(
                     (x) => x.address.toLowerCase() === token0_addr.toLowerCase()
@@ -133,9 +104,9 @@ export class BrownFiVaultAdapter extends BaseAdapter {
                     throw new Error(`Failed to fetch data for ${token.address}: totalSupply is 0`);
 
                 const price =
-                    Number(formatUnits(token0_amount, token0_decimals)) * token0_price +
-                    (Number(formatUnits(token1_amount, token1_decimals)) * token1_price) /
-                        Number(formatUnits(totalSupply, 18));
+                    (Number(formatUnits(token0_amount, token0_decimals)) * token0_price +
+                        Number(formatUnits(token1_amount, token1_decimals)) * token1_price) /
+                    Number(formatUnits(totalSupply, token.decimals));
 
                 return {
                     address: token.address,

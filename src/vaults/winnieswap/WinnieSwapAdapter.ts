@@ -1,10 +1,8 @@
 import { BaseAdapter, Token, TokenPrice } from "../../types";
+import { uniswapV3PoolAbi } from "../../utils/uniswapV3PoolAbi";
 
 // GraphQL endpoint for WinnieSwap Indexer (Ponder)
 const WINNIESWAP_GRAPHQL_URL = "https://sub.winnieswap.com/";
-
-// Berachain API for token prices
-const BERACHAIN_API_URL = "https://api.berachain.com/graphql";
 
 interface StickyVaultData {
     id: string; // Vault address
@@ -19,14 +17,6 @@ interface StickyVaultData {
         };
         feeTier: number;
     };
-}
-
-interface TokenPriceData {
-    address: string;
-    chain: string;
-    price: number;
-    updatedAt: BigInteger;
-    updatedBy: string;
 }
 
 const VAULTS_QUERY = `
@@ -46,18 +36,6 @@ const VAULTS_QUERY = `
           feeTier
         }
       }
-    }
-  }
-`;
-
-const TOKEN_PRICE_QUERY = `
-  query GetTokenPrices($addresses: [String!]!) {
-    tokenGetCurrentPrices(addressIn: $addresses, chains: BERACHAIN) {
-      address
-      chain
-      price
-      updatedAt
-      updatedBy
     }
   }
 `;
@@ -119,61 +97,19 @@ export class WinnieSwapAdapter extends BaseAdapter {
                             contracts: [
                                 {
                                     address: token.address as `0x${string}`,
-                                    abi: [
-                                        {
-                                            type: "function",
-                                            name: "totalSupply",
-                                            inputs: [],
-                                            outputs: [
-                                                {
-                                                    internalType: "uint256",
-                                                    name: "",
-                                                    type: "uint256",
-                                                },
-                                            ],
-                                            stateMutability: "view",
-                                        },
-                                    ],
+                                    abi: uniswapV3PoolAbi,
                                     functionName: "totalSupply",
                                     args: [],
                                 },
                                 {
                                     address: token.address as `0x${string}`,
-                                    abi: [
-                                        {
-                                            type: "function",
-                                            name: "token0",
-                                            inputs: [],
-                                            outputs: [
-                                                {
-                                                    internalType: "address",
-                                                    name: "",
-                                                    type: "address",
-                                                },
-                                            ],
-                                            stateMutability: "view",
-                                        },
-                                    ],
+                                    abi: uniswapV3PoolAbi,
                                     functionName: "token0",
                                     args: [],
                                 },
                                 {
                                     address: token.address as `0x${string}`,
-                                    abi: [
-                                        {
-                                            type: "function",
-                                            name: "token1",
-                                            inputs: [],
-                                            outputs: [
-                                                {
-                                                    internalType: "address",
-                                                    name: "",
-                                                    type: "address",
-                                                },
-                                            ],
-                                            stateMutability: "view",
-                                        },
-                                    ],
+                                    abi: uniswapV3PoolAbi,
                                     functionName: "token1",
                                     args: [],
                                 },
@@ -218,7 +154,7 @@ export class WinnieSwapAdapter extends BaseAdapter {
                     }
 
                     // Fetch prices for token0 and token1 from Berachain API
-                    const tokenPrices = await getTokenPrices([token0_addr, token1_addr]);
+                    const tokenPrices = await this.fetchTokenPrice([token0_addr, token1_addr]);
 
                     const token0_price = tokenPrices.find(
                         (x) => x.address.toLowerCase() === token0_addr.toLowerCase()
@@ -282,35 +218,5 @@ export class WinnieSwapAdapter extends BaseAdapter {
      */
     async getIncentiveTokenPrices(): Promise<TokenPrice[]> {
         return [];
-    }
-}
-
-/**
- * Helper function to get token prices from Berachain API
- */
-async function getTokenPrices(addresses: string[]): Promise<TokenPriceData[]> {
-    try {
-        const response = await fetch(BERACHAIN_API_URL, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                query: TOKEN_PRICE_QUERY,
-                variables: {
-                    addresses,
-                },
-            }),
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        return data.data.tokenGetCurrentPrices;
-    } catch (error) {
-        console.error("Error fetching token prices:", error);
-        throw error;
     }
 }

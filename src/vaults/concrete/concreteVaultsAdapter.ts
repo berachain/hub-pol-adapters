@@ -279,32 +279,40 @@ export class ConcreteVaultAdapter extends BaseAdapter {
                 );
                 if (!vault) throw new Error(`Vault not found for staking token ${token.address}`);
                 const { vaultAddress, funded } = vault;
-                const totalSupply = (await this.publicClient.readContract({
-                    address: vaultAddress,
-                    abi: [
+                const [totalSupply, totalAssets] = await this.publicClient.multicall({
+                    allowFailure: false,
+                    contracts: [
                         {
-                            type: "function",
-                            name: "totalSupply",
-                            inputs: [],
-                            outputs: [{ name: "", type: "uint256" }],
-                            stateMutability: "view",
+                            address: vaultAddress,
+                            abi: [
+                                {
+                                    type: "function",
+                                    name: "totalSupply",
+                                    inputs: [],
+                                    outputs: [{ name: "", type: "uint256" }],
+                                    stateMutability: "view",
+                                },
+                            ],
+                            functionName: "totalSupply",
+                            args: [],
+                        },
+                        {
+                            address: vaultAddress,
+                            abi: [
+                                {
+                                    type: "function",
+                                    name: "totalAssets",
+                                    inputs: [],
+                                    outputs: [{ name: "", type: "uint256" }],
+                                    stateMutability: "view",
+                                },
+                            ],
+                            functionName: "totalAssets",
+                            args: [],
                         },
                     ],
-                    functionName: "totalSupply",
-                })) as bigint;
-                const totalAssets = (await this.publicClient.readContract({
-                    address: vaultAddress,
-                    abi: [
-                        {
-                            type: "function",
-                            name: "totalAssets",
-                            inputs: [],
-                            outputs: [{ name: "", type: "uint256" }],
-                            stateMutability: "view",
-                        },
-                    ],
-                    functionName: "totalAssets",
-                })) as bigint;
+                });
+
                 if (!funded && totalSupply === 0n) {
                     // Allow price = 0 while not funded
                     return {

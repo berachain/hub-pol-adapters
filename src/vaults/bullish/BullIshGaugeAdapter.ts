@@ -1,5 +1,4 @@
 import { BaseAdapter, Token, TokenPrice } from "../../types";
-import { fetchTokenPrice } from "../examples/hub-api";
 
 export class BullIshGaugeAdapter extends BaseAdapter {
     readonly name = "BullIshGaugeAdapter";
@@ -19,7 +18,9 @@ export class BullIshGaugeAdapter extends BaseAdapter {
 
     async getRewardVaultStakingTokenPrices(stakingTokens: Token[]): Promise<TokenPrice[]> {
         // Get BERA price
-        const beraPrices = await fetchTokenPrice(["0x6969696969696969696969696969696969696969"]);
+        const beraPrices = await this.fetchTokenPrice([
+            "0x6969696969696969696969696969696969696969",
+        ]);
         const beraPrice =
             beraPrices?.find(
                 (p) =>

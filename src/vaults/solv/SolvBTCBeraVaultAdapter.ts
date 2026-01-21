@@ -1,5 +1,4 @@
 import { BaseAdapter, Token, TokenPrice } from "../../types";
-import { fetchTokenPrice } from "../examples/hub-api";
 
 export class SolvBTCBeraVaultAdapter extends BaseAdapter {
     readonly name = "SolvBTCBeraVaultAdapter";
@@ -33,7 +32,7 @@ export class SolvBTCBeraVaultAdapter extends BaseAdapter {
             stakingTokens.map(async (token) => {
                 // 1 SolvBTC.BERA = 1 SolvBTC
                 const price = (
-                    await fetchTokenPrice(["0x541FD749419CA806a8bc7da8ac23D346f2dF8B77"])
+                    await this.fetchTokenPrice(["0x541FD749419CA806a8bc7da8ac23D346f2dF8B77"])
                 )[0].price;
 
                 return {

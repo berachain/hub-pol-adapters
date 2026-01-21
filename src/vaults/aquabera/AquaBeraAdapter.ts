@@ -1,26 +1,5 @@
 import { BaseAdapter, Token, TokenPrice } from "../../types";
-
-const BERACHAIN_API_URL = "https://api.berachain.com/graphql";
-
-type TokenPriceData = {
-    address: string;
-    chain: string;
-    price: number;
-    updatedAt: BigInteger;
-    updatedBy: string;
-};
-
-const PRICE_QUERY = `
-  query GetTokenPrices($addresses: [String!]!) {
-    tokenGetCurrentPrices(addressIn: $addresses, chains: BERACHAIN) {
-      address
-      chain
-      price
-      updatedAt
-      updatedBy
-    }
-  }
-`;
+import { uniswapV3PoolAbi } from "../../utils/uniswapV3PoolAbi";
 
 export class AquaBeraAdapter extends BaseAdapter {
     readonly name = "AquaBeraAdapter";
@@ -58,71 +37,62 @@ export class AquaBeraAdapter extends BaseAdapter {
     async getRewardVaultStakingTokenPrices(stakingTokens: Token[]): Promise<TokenPrice[]> {
         const prices = await Promise.all(
             stakingTokens.map(async (token) => {
-                const totalSupply = (await this.publicClient.readContract({
-                    address: token.address as `0x${string}`,
-                    abi: [
-                        {
-                            type: "function",
-                            name: "totalSupply",
-                            inputs: [],
-                            outputs: [{ internalType: "uint256", name: "", type: "uint256" }],
-                            stateMutability: "view",
-                        },
-                    ],
-                    functionName: "totalSupply",
-                })) as bigint;
-
-                const [totalAmount0, totalAmount1] = (await this.publicClient.readContract({
-                    address: token.address as `0x${string}`,
-                    abi: [
-                        {
-                            type: "function",
-                            name: "getTotalAmounts",
-                            inputs: [],
-                            outputs: [
-                                { internalType: "uint256", name: "total0", type: "uint256" },
-                                { internalType: "uint256", name: "total1", type: "uint256" },
-                            ],
-                            stateMutability: "view",
-                        },
-                    ],
-                    functionName: "getTotalAmounts",
-                })) as [bigint, bigint];
-
-                const token0_addr = (await this.publicClient.readContract({
-                    address: token.address as `0x${string}`,
-                    abi: [
-                        {
-                            type: "function",
-                            name: "token0",
-                            inputs: [],
-                            outputs: [{ internalType: "address", name: "", type: "address" }],
-                            stateMutability: "view",
-                        },
-                    ],
-                    functionName: "token0",
-                })) as string;
-
-                const token1_addr = (await this.publicClient.readContract({
-                    address: token.address as `0x${string}`,
-                    abi: [
-                        {
-                            type: "function",
-                            name: "token1",
-                            inputs: [],
-                            outputs: [{ internalType: "address", name: "", type: "address" }],
-                            stateMutability: "view",
-                        },
-                    ],
-                    functionName: "token1",
-                })) as string;
+                const [totalSupply, [totalAmount0, totalAmount1], token0_addr, token1_addr] =
+                    await this.publicClient.multicall({
+                        allowFailure: false,
+                        contracts: [
+                            {
+                                address: token.address as `0x${string}`,
+                                abi: uniswapV3PoolAbi,
+                                functionName: "totalSupply",
+                                args: [],
+                            },
+                            {
+                                address: token.address as `0x${string}`,
+                                abi: [
+                                    {
+                                        type: "function",
+                                        name: "getTotalAmounts",
+                                        inputs: [],
+                                        outputs: [
+                                            {
+                                                internalType: "uint256",
+                                                name: "total0",
+                                                type: "uint256",
+                                            },
+                                            {
+                                                internalType: "uint256",
+                                                name: "total1",
+                                                type: "uint256",
+                                            },
+                                        ],
+                                        stateMutability: "view",
+                                    },
+                                ],
+                                functionName: "getTotalAmounts",
+                                args: [],
+                            },
+                            {
+                                address: token.address as `0x${string}`,
+                                abi: uniswapV3PoolAbi,
+                                functionName: "token0",
+                                args: [],
+                            },
+                            {
+                                address: token.address as `0x${string}`,
+                                abi: uniswapV3PoolAbi,
+                                functionName: "token1",
+                                args: [],
+                            },
+                        ],
+                    });
 
                 if (totalSupply === 0n)
                     throw new Error(
                         `Failed to fetch LSP data for ${token.address}: totalSupply is 0`
                     );
 
-                const prices = await getTokenPrices([token0_addr, token1_addr]);
+                const prices = await this.fetchTokenPrice([token0_addr, token1_addr]);
 
                 const token0_price = prices.find(
                     (x) => x.address.toLowerCase() === token0_addr.toLowerCase()
@@ -200,32 +170,5 @@ export class AquaBeraAdapter extends BaseAdapter {
     async getIncentiveTokenPrices(): Promise<TokenPrice[]> {
         // Implement to return incentive token prices
         return [];
-    }
-}
-
-async function getTokenPrices(addresses: string[]): Promise<TokenPriceData[]> {
-    try {
-        const response = await fetch(BERACHAIN_API_URL, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                query: PRICE_QUERY,
-                variables: {
-                    addresses,
-                },
-            }),
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        return data.data.tokenGetCurrentPrices;
-    } catch (error) {
-        console.error("Error fetching pool data:", error);
-        throw error;
     }
 }
