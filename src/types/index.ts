@@ -23,6 +23,8 @@ export interface TokenPrice {
     chainId: number;
 }
 
+export type GetTokenPrices = (tokens: string[]) => Promise<TokenAndPrice[]>;
+
 /**
  * Base adapter class that all protocol adapters must extend
  * Each protocol implements these methods to interact with their token ecosystem
@@ -34,8 +36,15 @@ export abstract class BaseAdapter {
 
     protected publicClient: PublicClient;
     protected berachainApiUrl: string;
+    
+    private getTokenPrices?: GetTokenPrices;
 
-    constructor(config: { publicClient?: PublicClient; berachainApiUrl?: string } = {}) {
+    constructor(config: { publicClient?: PublicClient; berachainApiUrl?: string, 
+        /**
+         * Function to get token prices from an external source
+         * If not provided, the adapter will use the Berachain API to get token prices
+         */
+        getTokenPrices?: GetTokenPrices } = {}) {
         this.publicClient =
             config.publicClient ??
             createPublicClient({
@@ -43,6 +52,7 @@ export abstract class BaseAdapter {
                 transport: http("https://rpc.berachain.com"),
             });
         this.berachainApiUrl = config.berachainApiUrl ?? "https://api.berachain.com/";
+        this.getTokenPrices = config.getTokenPrices;
     }
 
     /**
@@ -93,6 +103,10 @@ export abstract class BaseAdapter {
     }
 
     async fetchTokenPrice(tokens: string[]): Promise<TokenAndPrice[]> {
+        if (this.getTokenPrices) {
+            return await this.getTokenPrices(tokens);
+        }
+
         try {
             const response = await this.queryBerachainAPI(this.TOKEN_PRICE_QUERY, {
                 tokens,
