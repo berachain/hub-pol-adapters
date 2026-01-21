@@ -82,7 +82,7 @@ export abstract class BaseAdapter {
         }
     `;
 
-    async queryBerachainAPI(query: string, variables: Record<string, any>) {
+    async queryBerachainAPI(query: string, variables: Record<string, unknown>) {
         return await fetch(this.berachainApiUrl, {
             method: "POST",
             headers: {
