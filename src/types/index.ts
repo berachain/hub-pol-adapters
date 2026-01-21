@@ -35,23 +35,26 @@ export abstract class BaseAdapter {
     enabled: boolean = true;
 
     protected publicClient: PublicClient;
-    protected berachainApiUrl: string;
-    
+    protected berachainApiUrl: string = "https://api.berachain.com/";
+
     private getTokenPrices?: GetTokenPrices;
 
-    constructor(config: { publicClient?: PublicClient; berachainApiUrl?: string, 
-        /**
-         * Function to get token prices from an external source
-         * If not provided, the adapter will use the Berachain API to get token prices
-         */
-        getTokenPrices?: GetTokenPrices } = {}) {
+    constructor(
+        config: {
+            publicClient?: PublicClient;
+            /**
+             * Function to get token prices from an external source
+             * If not provided, the adapter will use the Berachain API to get token prices
+             */
+            getTokenPrices?: GetTokenPrices;
+        } = {}
+    ) {
         this.publicClient =
             config.publicClient ??
             createPublicClient({
                 chain: berachain,
                 transport: http("https://rpc.berachain.com"),
             });
-        this.berachainApiUrl = config.berachainApiUrl ?? "https://api.berachain.com/";
         this.getTokenPrices = config.getTokenPrices;
     }
 
