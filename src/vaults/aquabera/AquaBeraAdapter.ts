@@ -1,28 +1,6 @@
 import { BaseAdapter, Token, TokenPrice } from "../../types";
 import { uniswapV3PoolAbi } from "../../utils/uniswapV3PoolAbi";
 
-const BERACHAIN_API_URL = "https://api.berachain.com/graphql";
-
-type TokenPriceData = {
-    address: string;
-    chain: string;
-    price: number;
-    updatedAt: BigInteger;
-    updatedBy: string;
-};
-
-const PRICE_QUERY = `
-  query GetTokenPrices($addresses: [String!]!) {
-    tokenGetCurrentPrices(addressIn: $addresses, chains: BERACHAIN) {
-      address
-      chain
-      price
-      updatedAt
-      updatedBy
-    }
-  }
-`;
-
 export class AquaBeraAdapter extends BaseAdapter {
     readonly name = "AquaBeraAdapter";
     readonly description =
@@ -114,7 +92,7 @@ export class AquaBeraAdapter extends BaseAdapter {
                         `Failed to fetch LSP data for ${token.address}: totalSupply is 0`
                     );
 
-                const prices = await getTokenPrices([token0_addr, token1_addr]);
+                const prices = await this.fetchTokenPrice([token0_addr, token1_addr]);
 
                 const token0_price = prices.find(
                     (x) => x.address.toLowerCase() === token0_addr.toLowerCase()
@@ -192,32 +170,5 @@ export class AquaBeraAdapter extends BaseAdapter {
     async getIncentiveTokenPrices(): Promise<TokenPrice[]> {
         // Implement to return incentive token prices
         return [];
-    }
-}
-
-async function getTokenPrices(addresses: string[]): Promise<TokenPriceData[]> {
-    try {
-        const response = await fetch(BERACHAIN_API_URL, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                query: PRICE_QUERY,
-                variables: {
-                    addresses,
-                },
-            }),
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        return data.data.tokenGetCurrentPrices;
-    } catch (error) {
-        console.error("Error fetching pool data:", error);
-        throw error;
     }
 }
