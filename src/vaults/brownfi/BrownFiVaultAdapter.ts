@@ -28,7 +28,7 @@ export class BrownFiVaultAdapter extends BaseAdapter {
     }
 
     async getRewardVaultStakingTokenPrices(stakingTokens: Token[]): Promise<TokenPrice[]> {
-        const prices = await Promise.all(
+        const data = await Promise.all(
             stakingTokens.map(async (token) => {
                 const [totalSupply, token0_addr, token1_addr] = await this.publicClient.multicall({
                     allowFailure: false,
@@ -53,21 +53,6 @@ export class BrownFiVaultAdapter extends BaseAdapter {
                         },
                     ],
                 });
-
-                const tokenPrices = await this.fetchTokenPrice([token0_addr, token1_addr]);
-
-                const token0_price = tokenPrices.find(
-                    (x) => x.address.toLowerCase() === token0_addr.toLowerCase()
-                )?.price;
-                const token1_price = tokenPrices.find(
-                    (x) => x.address.toLowerCase() === token1_addr.toLowerCase()
-                )?.price;
-
-                if (token0_price === undefined || token1_price === undefined) {
-                    throw new Error(
-                        `Failed to fetch token prices for ${token0_addr} or ${token1_addr}`
-                    );
-                }
 
                 const [token0_amount, token1_amount, token0_decimals, token1_decimals] =
                     await this.publicClient.multicall({
@@ -100,6 +85,50 @@ export class BrownFiVaultAdapter extends BaseAdapter {
                         ],
                     });
 
+                return {
+                    totalSupply,
+                    token0_addr,
+                    token1_addr,
+                    token0_amount,
+                    token1_amount,
+                    token0_decimals,
+                    token1_decimals,
+                };
+            })
+        );
+
+        const tokenPrices = await this.fetchTokenPrice(
+            data.map(({ token0_addr, token1_addr }) => [token0_addr, token1_addr]).flat()
+        );
+
+        return data.map(
+            (
+                {
+                    totalSupply,
+                    token0_addr,
+                    token1_addr,
+                    token0_amount,
+                    token1_amount,
+                    token0_decimals,
+                    token1_decimals,
+                },
+                idx
+            ) => {
+                const token = stakingTokens[idx];
+
+                const token0_price = tokenPrices.find(
+                    (x) => x.address.toLowerCase() === token0_addr.toLowerCase()
+                )?.price;
+                const token1_price = tokenPrices.find(
+                    (x) => x.address.toLowerCase() === token1_addr.toLowerCase()
+                )?.price;
+
+                if (token0_price === undefined || token1_price === undefined) {
+                    throw new Error(
+                        `Failed to fetch token prices for ${token0_addr} or ${token1_addr}`
+                    );
+                }
+
                 if (totalSupply === 0n)
                     throw new Error(`Failed to fetch data for ${token.address}: totalSupply is 0`);
 
@@ -114,10 +143,8 @@ export class BrownFiVaultAdapter extends BaseAdapter {
                     timestamp: Date.now(),
                     chainId: 80094,
                 };
-            })
+            }
         );
-
-        return prices;
     }
 
     async getIncentiveTokens(): Promise<Token[]> {
