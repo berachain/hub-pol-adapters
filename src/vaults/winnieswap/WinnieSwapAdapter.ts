@@ -86,121 +86,121 @@ export class WinnieSwapAdapter extends BaseAdapter {
      * Price = (totalAmount0 * price0 + totalAmount1 * price1) / totalSupply
      */
     async getRewardVaultStakingTokenPrices(stakingTokens: Token[]): Promise<TokenPrice[]> {
-        const prices = await Promise.all(
+        const data = await Promise.all(
             stakingTokens.map(async (token) => {
-                try {
-                    // Get total supply of the vault token
+                // Get total supply of the vault token
 
-                    const [totalSupply, token0_addr, token1_addr, [totalAmount0, totalAmount1]] =
-                        await this.publicClient.multicall({
-                            allowFailure: false,
-                            contracts: [
+                return await this.publicClient.multicall({
+                    allowFailure: false,
+                    contracts: [
+                        {
+                            address: token.address as `0x${string}`,
+                            abi: uniswapV3PoolAbi,
+                            functionName: "totalSupply",
+                            args: [],
+                        },
+                        {
+                            address: token.address as `0x${string}`,
+                            abi: uniswapV3PoolAbi,
+                            functionName: "token0",
+                            args: [],
+                        },
+                        {
+                            address: token.address as `0x${string}`,
+                            abi: uniswapV3PoolAbi,
+                            functionName: "token1",
+                            args: [],
+                        },
+                        {
+                            address: token.address as `0x${string}`,
+                            abi: [
                                 {
-                                    address: token.address as `0x${string}`,
-                                    abi: uniswapV3PoolAbi,
-                                    functionName: "totalSupply",
-                                    args: [],
-                                },
-                                {
-                                    address: token.address as `0x${string}`,
-                                    abi: uniswapV3PoolAbi,
-                                    functionName: "token0",
-                                    args: [],
-                                },
-                                {
-                                    address: token.address as `0x${string}`,
-                                    abi: uniswapV3PoolAbi,
-                                    functionName: "token1",
-                                    args: [],
-                                },
-                                {
-                                    address: token.address as `0x${string}`,
-                                    abi: [
+                                    type: "function",
+                                    name: "getUnderlyingBalances",
+                                    inputs: [],
+                                    outputs: [
                                         {
-                                            type: "function",
-                                            name: "getUnderlyingBalances",
-                                            inputs: [],
-                                            outputs: [
-                                                {
-                                                    internalType: "uint256",
-                                                    name: "amount0Current",
-                                                    type: "uint256",
-                                                },
-                                                {
-                                                    internalType: "uint256",
-                                                    name: "amount1Current",
-                                                    type: "uint256",
-                                                },
-                                            ],
-                                            stateMutability: "view",
+                                            internalType: "uint256",
+                                            name: "amount0Current",
+                                            type: "uint256",
+                                        },
+                                        {
+                                            internalType: "uint256",
+                                            name: "amount1Current",
+                                            type: "uint256",
                                         },
                                     ],
-                                    functionName: "getUnderlyingBalances",
-                                    args: [],
+                                    stateMutability: "view",
                                 },
                             ],
-                        });
-
-                    if (totalSupply === 0n) {
-                        console.warn(
-                            `Vault ${token.address} has zero totalSupply, skipping price calculation`
-                        );
-                        return {
-                            address: token.address,
-                            price: 0,
-                            timestamp: Date.now(),
-                            chainId: 80094,
-                        };
-                    }
-
-                    // Fetch prices for token0 and token1 from Berachain API
-                    const tokenPrices = await this.fetchTokenPrice([token0_addr, token1_addr]);
-
-                    const token0_price = tokenPrices.find(
-                        (x) => x.address.toLowerCase() === token0_addr.toLowerCase()
-                    )?.price;
-
-                    const token1_price = tokenPrices.find(
-                        (x) => x.address.toLowerCase() === token1_addr.toLowerCase()
-                    )?.price;
-
-                    if (token0_price === undefined) {
-                        throw new Error(
-                            `Failed to find token price for underlying token: ${token0_addr}`
-                        );
-                    }
-
-                    if (token1_price === undefined) {
-                        throw new Error(
-                            `Failed to find token price for underlying token: ${token1_addr}`
-                        );
-                    }
-
-                    // Multiply prices up to get integer price (to avoid floating point issues)
-                    const token0IntPrice = token0_price * 1e18;
-                    const token1IntPrice = token1_price * 1e18;
-
-                    // LP price = (totalAmount0 * price0 + totalAmount1 * price1) / totalSupply
-                    const price =
-                        (Number(totalAmount0) * token0IntPrice +
-                            Number(totalAmount1) * token1IntPrice) /
-                        Number(totalSupply) /
-                        1e18;
-
-                    return {
-                        address: token.address,
-                        price,
-                        timestamp: Date.now(),
-                        chainId: 80094,
-                    };
-                } catch (error) {
-                    console.error(`Error calculating price for vault ${token.address}:`, error);
-                    throw error;
-                }
+                            functionName: "getUnderlyingBalances",
+                            args: [],
+                        },
+                    ],
+                });
             })
         );
 
-        return prices;
+        // Fetch prices for token0 and token1 from Berachain API
+        const tokenPrices = await this.fetchTokenPrice(
+            data.map(([_, token0_addr, token1_addr]) => [token0_addr, token1_addr]).flat()
+        );
+
+        return data.map(
+            ([totalSupply, token0_addr, token1_addr, [totalAmount0, totalAmount1]], idx) => {
+                const token = stakingTokens[idx];
+
+                if (totalSupply === 0n) {
+                    console.warn(
+                        `Vault ${token.address} has zero totalSupply, skipping price calculation`
+                    );
+                    return {
+                        address: token.address,
+                        price: 0,
+                        timestamp: Date.now(),
+                        chainId: 80094,
+                    };
+                }
+
+                const token0_price = tokenPrices.find(
+                    (x) => x.address.toLowerCase() === token0_addr.toLowerCase()
+                )?.price;
+
+                const token1_price = tokenPrices.find(
+                    (x) => x.address.toLowerCase() === token1_addr.toLowerCase()
+                )?.price;
+
+                if (token0_price === undefined) {
+                    throw new Error(
+                        `Failed to find token price for underlying token: ${token0_addr}`
+                    );
+                }
+
+                if (token1_price === undefined) {
+                    throw new Error(
+                        `Failed to find token price for underlying token: ${token1_addr}`
+                    );
+                }
+
+                // Multiply prices up to get integer price (to avoid floating point issues)
+                const token0IntPrice = token0_price * 1e18;
+                const token1IntPrice = token1_price * 1e18;
+
+                // LP price = (totalAmount0 * price0 + totalAmount1 * price1) / totalSupply
+                const price =
+                    (Number(totalAmount0) * token0IntPrice +
+                        Number(totalAmount1) * token1IntPrice) /
+                    Number(totalSupply) /
+                    1e18;
+
+                return {
+                    address: token.address,
+                    price,
+                    timestamp: Date.now(),
+                    chainId: 80094,
+                };
+            }
+        );
     }
 
     /**

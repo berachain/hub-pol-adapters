@@ -35,64 +35,73 @@ export class AquaBeraAdapter extends BaseAdapter {
      * These prices are used to calculate TVL for APR calculations
      */
     async getRewardVaultStakingTokenPrices(stakingTokens: Token[]): Promise<TokenPrice[]> {
-        const prices = await Promise.all(
+        const onChainData = await Promise.all(
             stakingTokens.map(async (token) => {
-                const [totalSupply, [totalAmount0, totalAmount1], token0_addr, token1_addr] =
-                    await this.publicClient.multicall({
-                        allowFailure: false,
-                        contracts: [
-                            {
-                                address: token.address as `0x${string}`,
-                                abi: uniswapV3PoolAbi,
-                                functionName: "totalSupply",
-                                args: [],
-                            },
-                            {
-                                address: token.address as `0x${string}`,
-                                abi: [
-                                    {
-                                        type: "function",
-                                        name: "getTotalAmounts",
-                                        inputs: [],
-                                        outputs: [
-                                            {
-                                                internalType: "uint256",
-                                                name: "total0",
-                                                type: "uint256",
-                                            },
-                                            {
-                                                internalType: "uint256",
-                                                name: "total1",
-                                                type: "uint256",
-                                            },
-                                        ],
-                                        stateMutability: "view",
-                                    },
-                                ],
-                                functionName: "getTotalAmounts",
-                                args: [],
-                            },
-                            {
-                                address: token.address as `0x${string}`,
-                                abi: uniswapV3PoolAbi,
-                                functionName: "token0",
-                                args: [],
-                            },
-                            {
-                                address: token.address as `0x${string}`,
-                                abi: uniswapV3PoolAbi,
-                                functionName: "token1",
-                                args: [],
-                            },
-                        ],
-                    });
+                return await this.publicClient.multicall({
+                    allowFailure: false,
+                    contracts: [
+                        {
+                            address: token.address as `0x${string}`,
+                            abi: uniswapV3PoolAbi,
+                            functionName: "totalSupply",
+                            args: [],
+                        },
+                        {
+                            address: token.address as `0x${string}`,
+                            abi: [
+                                {
+                                    type: "function",
+                                    name: "getTotalAmounts",
+                                    inputs: [],
+                                    outputs: [
+                                        {
+                                            internalType: "uint256",
+                                            name: "total0",
+                                            type: "uint256",
+                                        },
+                                        {
+                                            internalType: "uint256",
+                                            name: "total1",
+                                            type: "uint256",
+                                        },
+                                    ],
+                                    stateMutability: "view",
+                                },
+                            ],
+                            functionName: "getTotalAmounts",
+                            args: [],
+                        },
+                        {
+                            address: token.address as `0x${string}`,
+                            abi: uniswapV3PoolAbi,
+                            functionName: "token0",
+                            args: [],
+                        },
+                        {
+                            address: token.address as `0x${string}`,
+                            abi: uniswapV3PoolAbi,
+                            functionName: "token1",
+                            args: [],
+                        },
+                    ],
+                });
+            })
+        );
+        const prices = await this.fetchTokenPrice(
+            onChainData
+                .map(([_, __, token0_addr, token1_addr]) => [token0_addr, token1_addr])
+                .flat()
+                // unique tokens
+                .filter((token, idx, self) => self.indexOf(token) === idx)
+        );
 
+        return onChainData.map(
+            ([totalSupply, [totalAmount0, totalAmount1], token0_addr, token1_addr], idx) => {
+                const token = stakingTokens[idx];
                 if (totalSupply === 0n)
                     throw new Error(
                         `Failed to fetch LSP data for ${token.address}: totalSupply is 0`
                     );
-
-                const prices = await this.fetchTokenPrice([token0_addr, token1_addr]);
 
                 const token0_price = prices.find(
                     (x) => x.address.toLowerCase() === token0_addr.toLowerCase()
@@ -130,10 +139,8 @@ export class AquaBeraAdapter extends BaseAdapter {
                     timestamp: Date.now(),
                     chainId: 80094,
                 };
-            })
+            }
         );
-
-        return prices;
     }
 
     /**
