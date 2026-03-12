@@ -1,129 +1,197 @@
-import { http, createPublicClient, PublicClient } from "viem";
+import { http, createPublicClient, type PublicClient } from "viem";
 import { berachain } from "viem/chains";
-import { gql } from "graphql-request";
-
-interface TokenAndPrice {
-    address: string;
-    price: number;
-    updatedAt: number;
-}
-
-export interface Token {
-    address: `0x${string}`;
-    symbol: string;
-    name: string;
-    decimals: number;
-    chainId: number;
-}
-
-export interface TokenPrice {
-    address: `0x${string}`;
-    price: number;
-    timestamp: number;
-    chainId: number;
-}
-
-export type GetTokenPrices = (tokens: string[]) => Promise<TokenAndPrice[]>;
 
 /**
- * Base adapter class that all protocol adapters must extend
- * Each protocol implements these methods to interact with their token ecosystem
+ * Represents an ERC20 token on Berachain.
  */
-export abstract class BaseAdapter {
-    abstract readonly name: string;
-    abstract readonly description?: string;
-    enabled: boolean = true;
+export interface Token {
+  address: `0x${string}`;
+  symbol: string;
+  name: string;
+  decimals: number;
+  chainId: number;
+}
 
-    protected publicClient: PublicClient;
-    protected berachainApiUrl: string = "https://api.berachain.com/";
+/**
+ * A successfully resolved token price.
+ */
+export interface TokenPriceFulfilled {
+  status: "fulfilled";
+  address: `0x${string}`;
+  price: number;
+  /** Millisecond timestamp of when the price was determined */
+  timestamp: number;
+  /** Which adapter produced this price */
+  source: string;
+}
 
-    private getTokenPrices?: GetTokenPrices;
+/**
+ * A token price that failed to resolve.
+ */
+export interface TokenPriceRejected {
+  status: "rejected";
+  address: `0x${string}`;
+  error: string;
+  /** Which adapter attempted to produce this price */
+  source: string;
+}
 
-    constructor(
-        config: {
-            publicClient?: PublicClient;
-            /**
-             * Function to get token prices from an external source
-             * If not provided, the adapter will use the Berachain API to get token prices
-             */
-            getTokenPrices?: GetTokenPrices;
-        } = {}
-    ) {
-        this.publicClient =
-            config.publicClient ??
-            createPublicClient({
-                chain: berachain,
-                transport: http("https://rpc.berachain.com"),
-            });
-        this.getTokenPrices = config.getTokenPrices;
+export type TokenPriceResult = TokenPriceFulfilled | TokenPriceRejected;
+
+/**
+ * Shape returned by external price lookups (API or DB).
+ */
+export interface TokenAndPrice {
+  address: string;
+  price: number;
+  updatedAt: number;
+}
+
+/**
+ * Options for historical price queries.
+ *
+ * - `blockNumber`: used for on-chain reads at a specific block (viem multicall/readContract)
+ * - `timestamp`: used for API/DB lookups at a specific point in time (ms)
+ *
+ * At most one should be provided. If neither is set, current prices are fetched.
+ */
+export interface PriceQueryOptions {
+  blockNumber?: bigint;
+  timestamp?: number;
+}
+
+/**
+ * Signature for the external price-fetching function.
+ * The backend injects a DB-backed implementation; the default falls back to the Berachain API.
+ */
+export type GetTokenPrices = (
+  tokens: string[],
+  opts?: PriceQueryOptions,
+) => Promise<TokenAndPrice[]>;
+
+export interface PriceAdapterConfig {
+  publicClient?: PublicClient;
+  /**
+   * External price source. If not provided, the adapter uses the Berachain API
+   * (which only supports current prices).
+   */
+  getTokenPrices?: GetTokenPrices;
+}
+
+const TOKEN_PRICE_QUERY = `
+  query ($tokens: [String!]!) {
+    tokenGetCurrentPrices(chains: [BERACHAIN], addressIn: $tokens) {
+      address
+      price
+      updatedAt
+    }
+  }
+`;
+
+/**
+ * Base class for all price adapters. Subclasses declare the tokens they handle
+ * and implement the pricing logic.
+ */
+export abstract class BasePriceAdapter {
+  abstract readonly name: string;
+
+  protected publicClient: PublicClient;
+  protected berachainApiUrl: string = "https://api.berachain.com/";
+
+  private _getTokenPrices?: GetTokenPrices;
+
+  constructor(config: PriceAdapterConfig = {}) {
+    this.publicClient =
+      config.publicClient ??
+      createPublicClient({
+        chain: berachain,
+        transport: http("https://rpc.berachain.com"),
+      });
+    this._getTokenPrices = config.getTokenPrices;
+  }
+
+  /**
+   * Returns the list of tokens this adapter can price.
+   * May be hardcoded or dynamically discovered (e.g. via a subgraph).
+   */
+  abstract getTokens(): Promise<Token[]>;
+
+  /**
+   * Compute prices for the given tokens. Each token resolves independently —
+   * a failure for one token does not affect others.
+   *
+   * Adapters should use `Promise.allSettled` internally to isolate errors.
+   *
+   * @param tokens - Tokens to price (typically the result of `getTokens()`)
+   * @param opts   - Optional: query at a specific block or timestamp
+   */
+  abstract getTokenPrices(
+    tokens: Token[],
+    opts?: PriceQueryOptions,
+  ): Promise<TokenPriceResult[]>;
+
+  // ---------------------------------------------------------------------------
+  // Helpers
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Fetch prices for underlying / reference tokens from the external source
+   * (injected `getTokenPrices` function) or from the Berachain API.
+   */
+  protected async fetchTokenPrice(
+    tokens: string[],
+    opts?: PriceQueryOptions,
+  ): Promise<TokenAndPrice[]> {
+    if (this._getTokenPrices) {
+      return this._getTokenPrices(tokens, opts);
     }
 
-    /**
-     * Get staking tokens from reward vaults that you want to support APR calculations
-     * @returns Promise resolving to list of tokens
-     */
-    abstract getRewardVaultStakingTokens(): Promise<Token[]>;
+    // Fallback: Berachain API (current prices only)
+    const response = await fetch(this.berachainApiUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query: TOKEN_PRICE_QUERY, variables: { tokens } }),
+    });
 
-    /**
-     * Get prices for staking tokens in reward vaults. These prices will be used to determine TVL in the reward vaults
-     * i.e. if your staking token is a LP token of a pool, the price is usually TVL of the pool / lp token supply
-     * @returns Promise resolving to list of token prices
-     */
-    abstract getRewardVaultStakingTokenPrices(stakingTokens: Token[]): Promise<TokenPrice[]>;
-
-    /**
-     * Get incentive/reward tokens available in the protocol
-     * @returns Promise resolving to list of tokens
-     */
-    abstract getIncentiveTokens(): Promise<Token[]>;
-
-    /**
-     * Get prices for incentive tokens. These prices will be used to determine total usd value of incentives as well as BGT APRs
-     * DO NOT include staking tokens in this list
-     * NO NEED to include incentive tokens that already have prices on https://hub.berachain.com/vaults
-     * @returns Promise resolving to list of token prices
-     */
-    abstract getIncentiveTokenPrices(incentiveTokens: Token[]): Promise<TokenPrice[]>;
-
-    TOKEN_PRICE_QUERY = gql`
-        query ($tokens: [String!]!) {
-            tokenGetCurrentPrices(chains: [BERACHAIN], addressIn: $tokens) {
-                address
-                price
-                updatedAt
-            }
-        }
-    `;
-
-    async queryBerachainAPI(query: string, variables: Record<string, unknown>) {
-        return await fetch(this.berachainApiUrl, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ query, variables }),
-        });
+    if (!response.ok) {
+      throw new Error(
+        `Berachain API error: HTTP ${response.status} ${response.statusText}`,
+      );
     }
 
-    async fetchTokenPrice(tokens: string[]): Promise<TokenAndPrice[]> {
-        if (this.getTokenPrices) {
-            return await this.getTokenPrices(tokens);
-        }
+    const data = await response.json();
+    return data.data.tokenGetCurrentPrices;
+  }
 
-        try {
-            const response = await this.queryBerachainAPI(this.TOKEN_PRICE_QUERY, {
-                tokens,
-            });
+  /**
+   * Helper to build a fulfilled result.
+   */
+  protected fulfilled(
+    address: `0x${string}`,
+    price: number,
+    timestamp?: number,
+  ): TokenPriceFulfilled {
+    return {
+      status: "fulfilled",
+      address,
+      price,
+      timestamp: timestamp ?? Date.now(),
+      source: this.name,
+    };
+  }
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const data = await response.json();
-            return data.data.tokenGetCurrentPrices;
-        } catch (error) {
-            console.error("Error fetching token price:", error);
-            throw error;
-        }
-    }
+  /**
+   * Helper to build a rejected result.
+   */
+  protected rejected(
+    address: `0x${string}`,
+    error: unknown,
+  ): TokenPriceRejected {
+    return {
+      status: "rejected",
+      address,
+      error: error instanceof Error ? error.message : String(error),
+      source: this.name,
+    };
+  }
 }

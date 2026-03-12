@@ -1,232 +1,154 @@
-# Hub PoL Adapter
+# Hub Price Adapters
 
-This repository contains adapters for discovering token prices from various DeFi protocols. These adapters are specifically designed to fetch token prices for reward vault staking tokens and incentive tokens, which are essential for correctly calculating APRs (Annual Percentage Rates) displayed on [Berachain Reward Vaults](https://hub.berachain.com/vaults/).
+Token price adapters for [Berachain](https://berachain.com/). Each adapter knows how to compute prices for a specific set of tokens — LP tokens, vault shares, or any on-chain derivative — and exposes them through a simple, uniform API.
 
-## Overview
+The backend uses these adapters to feed prices into reward vault APR calculations, but the library itself is protocol-agnostic: it's a price source, nothing else.
 
-The adapters in this repository follow a common interface defined by the `BaseAdapter` class. Each adapter is responsible for:
-
-1. Fetching staking tokens from reward vaults
-2. Getting prices for these staking tokens (used to calculate TVL and BGT APRs)
-3. Retrieving incentive/reward tokens
-4. Obtaining prices for incentive tokens (used to calculate reward rate and boost APRs)
-
-This standardized approach allows for consistent and accurate APR calculations across different protocols by ensuring all token prices are properly discovered.
-
-## When You Don't Need an Adapter
-
-### Staking Tokens
-
-You **do not need** to add your vault here if your vault's underlying staking token:
-
-- Comes from a Pool created in Hub
-- Comes from Kodiak Island
-- Comes from Kodiak V2
-
-In these cases, Hub already has the necessary price information for these tokens.
-
-### Incentive Tokens
-
-You **do not need** to implement the `getIncentiveTokenPrices` function if your token is already:
-
-- Listed on Hub
-- Listed on Kodiak
-
-If your token is not listed on Hub or Kodiak but is tracked by Coingecko:
-
-1. Add your token information to the [Berachain Metadata repo](https://github.com/berachain/metadata/blob/main/src/tokens/mainnet.json) with the Coingecko ID
-2. Hub will automatically fetch your token prices using the Coingecko API
-
-## Installation
+## Quick start
 
 ```bash
-# Install dependencies
 npm install
+npm test            # unit tests (vitest)
+npm run build       # tsup → dist/
 ```
 
-## Usage
+## API
 
-### Testing an Adapter
-
-To test an adapter, use the following command:
-
-```bash
-npm run test:adapter -- <path-to-adapter-file>
-```
-
-For example:
-
-```bash
-npm run test:adapter -- src/vaults/examples/wbera-lbgt-vault-adapter.ts
-```
-
-This will:
-
-1. Load the adapter from the specified file
-2. Execute the adapter's methods to fetch token information and prices
-3. Display the results in the console
-
-## Writing Your Own Adapter
-
-To create a new adapter for a specific protocol, follow these steps:
-
-### 1. Create a New File
-
-Create a new TypeScript file in the appropriate directory, e.g., `src/vaults/your-protocol/your-adapter.ts`.
-
-### 2. Implement the BaseAdapter Interface
-
-Your adapter must extend the `BaseAdapter` class and implement all required methods:
+Every adapter extends `BasePriceAdapter` and implements two methods:
 
 ```typescript
-import { BaseAdapter, Token, TokenPrice } from "../../types";
+import { BasePriceAdapter, Token, TokenPriceResult, PriceQueryOptions } from "@berachain/hub-pol-adapters";
 
-export class YourProtocolAdapter extends BaseAdapter {
-    readonly name = "Give a name";
-    readonly description = "Give a description";
+class MyAdapter extends BasePriceAdapter {
+  readonly name = "MyAdapter";
 
-    /**
-     * Get staking tokens from reward vaults
-     * These tokens are used to calculate TVL for APR calculations
-     */
-    async getRewardVaultStakingTokens(): Promise<Token[]> {
-        // Implement to return staking tokens
-        // Example:
-        return [
-            {
-                address: "0xv1...",
-                symbol: "VAULT1-LP-TOKEN",
-                name: "Vault1 LP Token",
-                decimals: 18,
-                chainId: 80094,
-            },
-            {
-                address: "0xv2...",
-                symbol: "VAULT2-LP-TOKEN",
-                name: "Vault2 LP Token",
-                decimals: 18,
-                chainId: 80094,
-            },
-        ];
-    }
+  async getTokens(): Promise<Token[]> {
+    // Return the tokens this adapter can price.
+    // Can be hardcoded or discovered dynamically (e.g. from a subgraph).
+  }
 
-    /**
-     * Get prices for staking tokens
-     * These prices are used to calculate TVL for APR calculations
-     */
-    async getRewardVaultStakingTokenPrices(stakingTokens: Token[]): Promise<TokenPrice[]> {
-        // Implement to return token prices
-        // Example:
-        return [
-            {
-                address: "0xv1...",
-                price: 1.23,
-                timestamp: Date.now(),
-            },
-            {
-                address: "0xv2...",
-                price: 4.56,
-                timestamp: Date.now(),
-            },
-        ];
-    }
-
-    /**
-     * Get incentive/reward tokens
-     * These tokens are used to calculate reward value for APR calculations
-     */
-    async getIncentiveTokens(): Promise<Token[]> {
-        // Implement to return incentive tokens
-        return [];
-    }
-
-    /**
-     * Get prices for incentive tokens
-     * These prices are used to calculate reward value for APR calculations
-     *
-     * Note: You don't need to implement this if your token is already listed on Hub or Kodiak,
-     * or if it's tracked by Coingecko (in which case, add it to the Berachain Metadata repo)
-     */
-    async getIncentiveTokenPrices(incentiveTokens: Token[]): Promise<TokenPrice[]> {
-        // Implement to return incentive token prices
-        return [];
-    }
+  async getTokenPrices(
+    tokens: Token[],
+    opts?: PriceQueryOptions,
+  ): Promise<TokenPriceResult[]> {
+    // Price each token independently using Promise.allSettled.
+    // One failure must not affect other tokens.
+  }
 }
 ```
 
-### 3. Key Implementation Details
-
-#### Token Structure
-
-Each token should have the following properties:
-
-- `address`: The token's contract address
-- `symbol`: The token's symbol
-- `name`: The token's full name
-- `decimals`: The number of decimal places for the token
-- `chainId`: 80094
-
-#### Token Price Structure
-
-Each token price should have:
-
-- `address`: The token's contract address (matching the token object)
-- `price`: The price in USD
-- `timestamp`: When the price was fetched (in milliseconds)
-
-#### Important Notes for APR Calculations
-
-- For staking tokens that are LP tokens, the price should represent the TVL of the pool divided by the LP token supply
-- For incentive tokens, only include tokens that don't already have prices on <https://hub.berachain.com/vaults>
-- Accurate token prices are critical for correct APR calculations
-- Make sure to handle errors gracefully and provide meaningful error messages
-
-### 4. Testing Your Adapter
-
-After implementing your adapter, test it using the command:
-
-```bash
-npm run test:adapter -- src/vaults/your-protocol/your-adapter.ts
-```
-
-### 5. Include Your Adapter in Package Exports
-
-Export your package class in `src/index.ts` to ensure that it is importable by the users of this package.
+### Consumer usage
 
 ```typescript
-// ...
-// add your adapter to the imports
-import { YourProtocolAdapter } from "./vaults/your-protocol/YourProtocolAdapter";
+import { SxVaultAdapter } from "@berachain/hub-pol-adapters";
 
-// add it to the list of exports
-export { ..., YourProtocolAdapter };
+const adapter = new SxVaultAdapter({
+  // Optional: inject a custom price source (e.g. DB lookup in the backend)
+  getTokenPrices: async (addresses, opts) => {
+    return db.getTokenPrices(addresses, opts?.timestamp);
+  },
+});
+
+const tokens = await adapter.getTokens();
+const prices = await adapter.getTokenPrices(tokens);
+
+for (const r of prices) {
+  if (r.status === "fulfilled") {
+    console.log(`${r.address}: $${r.price}`);
+  } else {
+    console.error(`${r.address}: ${r.error}`);
+  }
+}
 ```
 
-### 6. Get ready to merge
+### Historical prices
 
-Make sure your branch is ready for merging! Be sure to build everything locally with `npm build`, lint with `npm run lint` and format with `npm run format`. We run CI checks before merging, so doing these steps will save everyone time.
+Pass `PriceQueryOptions` to query at a specific point in time:
 
-## Project Structure
+```typescript
+// By block number — on-chain reads use this block for multicall/readContract
+await adapter.getTokenPrices(tokens, { blockNumber: 12345678n });
 
-```text
+// By timestamp — passed through to the injected getTokenPrices function (e.g. DB lookup)
+await adapter.getTokenPrices(tokens, { timestamp: 1710000000000 });
+```
+
+Not every adapter supports both modes. If a mode isn't supported, the result for that token will be `rejected` with a clear error.
+
+### Error handling
+
+`getTokenPrices` returns a `TokenPriceResult[]` — a discriminated union:
+
+```typescript
+type TokenPriceResult =
+  | { status: "fulfilled"; address: string; price: number; timestamp: number; source: string }
+  | { status: "rejected";  address: string; error: string; source: string };
+```
+
+Adapters use `Promise.allSettled` internally so a failure for one token never takes down another.
+
+## Types
+
+| Type | Description |
+|---|---|
+| `Token` | ERC-20 token metadata (address, symbol, name, decimals, chainId) |
+| `TokenPriceResult` | Fulfilled price or rejected error, per token |
+| `PriceQueryOptions` | Optional `blockNumber` and/or `timestamp` for historical queries |
+| `GetTokenPrices` | Signature for the injected price-fetching function |
+| `PriceAdapterConfig` | Constructor config: `publicClient` + `getTokenPrices` |
+
+## Adapters
+
+| Adapter | Protocol | Pricing strategy |
+|---|---|---|
+| `AquaBeraAdapter` | AquaBera | LP price from Kodiak V3 `getTotalAmounts` |
+| `BrownFiVaultAdapter` | BrownFi | LP price from token balances + decimals |
+| `BullIshGaugeAdapter` | Bull Ish | Vault token pegged to WBERA |
+| `ConcreteVaultAdapter` | Concrete | Vault share price from `totalAssets / totalSupply` |
+| `IVXVaultAdapter` | IVX | LP price from multi-token TVL / supply |
+| `SolvBTCBeraVaultAdapter` | Solv | 1:1 peg to SolvBTC |
+| `SxVaultAdapter` | SX Bet | 1:1 peg to WBERA (BGT) |
+| `WinnieSwapAdapter` | WinnieSwap | Dynamic vault discovery via GraphQL + LP pricing |
+
+## Testing
+
+```bash
+npm test                 # run all unit tests
+npm run test:watch       # watch mode
+npm run test:coverage    # with coverage report
+```
+
+### Debug test
+
+Runs every adapter against real RPC + Berachain API and prints a price table:
+
+```bash
+npx vitest run src/test/debug.test.ts --reporter=verbose --timeout=60000
+```
+
+## Project structure
+
+```
 src/
-├── types/              # Type definitions and interfaces
-├── utils/              # Utility functions and test scripts
-└── vaults/             # Adapter implementations
-    ├── examples/       # Example adapters
-    └── your-protocol/  # Your custom adapters
+├── types/                  # Token, TokenPriceResult, BasePriceAdapter
+├── adapters/
+│   ├── aquabera/
+│   │   ├── adapter.ts
+│   │   └── adapter.test.ts
+│   ├── brownfi/
+│   ├── bullish/
+│   ├── concrete/
+│   ├── ivx/
+│   ├── solv/
+│   ├── sx/
+│   └── winnieswap/
+├── utils/                  # Shared ABIs
+├── test/
+│   ├── helpers.ts          # Mock factories for unit tests
+│   └── debug.test.ts       # Live integration test
+└── index.ts                # Public exports
 ```
-
-## Contributing
-
-1. Fork or clone the repository
-2. Create a feature branch: `git checkout -b feature/your-adapter`
-3. Implement your adapter
-4. Test your adapter
-5. Commit your changes: `git commit -m 'Add adapter for Your Protocol'`
-6. Push the commit: `git push origin feature/your-adapter`
-7. Submit a pull request
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+MIT — see [LICENSE](./LICENSE).
