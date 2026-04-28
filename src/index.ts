@@ -6,7 +6,6 @@ import { BullIshGaugeAdapter } from "./vaults/bullish/BullIshGaugeAdapter";
 import { IVXVaultAdapter } from "./vaults/ivx/ivx-adapter";
 import { SolvBTCBeraVaultAdapter } from "./vaults/solv/SolvBTCBeraVaultAdapter";
 
-
 import { BaseAdapter } from "./types";
 import { BrownFiVaultAdapter } from "./vaults/brownfi/BrownFiVaultAdapter";
 
