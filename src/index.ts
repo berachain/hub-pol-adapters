@@ -6,7 +6,6 @@ import { BullIshGaugeAdapter } from "./vaults/bullish/BullIshGaugeAdapter";
 import { IVXVaultAdapter } from "./vaults/ivx/ivx-adapter";
 import { SolvBTCBeraVaultAdapter } from "./vaults/solv/SolvBTCBeraVaultAdapter";
 
-import { WinnieSwapAdapter } from "./vaults/winnieswap/WinnieSwapAdapter";
 
 import { BaseAdapter } from "./types";
 import { BrownFiVaultAdapter } from "./vaults/brownfi/BrownFiVaultAdapter";
@@ -19,5 +18,4 @@ export const adapters = [
     IVXVaultAdapter,
     SolvBTCBeraVaultAdapter,
     BrownFiVaultAdapter,
-    WinnieSwapAdapter,
 ] as const satisfies (typeof BaseAdapter)[];
