@@ -142,40 +142,5 @@ export class AquaBeraAdapter extends BaseAdapter {
             }
         );
     }
-
-    /**
-     * Get incentive/reward tokens
-     * These tokens are used to calculate reward value for APR calculations
-     */
-    async getIncentiveTokens(): Promise<Token[]> {
-        // Implement to return incentive tokens
-        return [
-            {
-                address: "0xb2F776e9c1C926C4b2e54182Fac058dA9Af0B6A5",
-                symbol: "HENLO",
-                name: "Henlo Token",
-                decimals: 18,
-                chainId: 80094,
-            },
-            {
-                address: "0x6969696969696969696969696969696969696969",
-                symbol: "WBERA",
-                name: "Wrapped Bera",
-                decimals: 18,
-                chainId: 80094,
-            },
-        ];
-    }
-
-    /**
-     * Get prices for incentive tokens
-     * These prices are used to calculate reward value for APR calculations
-     *
-     * Note: You don't need to implement this if your token is already listed on Hub or Kodiak,
-     * or if it's tracked by Coingecko (in which case, add it to the Berachain Metadata repo)
-     */
-    async getIncentiveTokenPrices(): Promise<TokenPrice[]> {
-        // Implement to return incentive token prices
-        return [];
-    }
+ 
 }

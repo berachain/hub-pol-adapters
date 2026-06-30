@@ -106,20 +106,7 @@ async function run(adapters: (typeof BaseAdapter)[]) {
                 const token = tokens.find((t: Token) => t.address === price.address);
                 console.log(`  ${token?.symbol}: $${price.price}`);
             }
-        }
-
-        // Get incentive tokens and their prices
-        const incentiveTokens = await adapter.getIncentiveTokens();
-        const incentivePrices = await adapter.getIncentiveTokenPrices(incentiveTokens);
-
-        if (incentivePrices.length > 0) {
-            console.log("\nIncentive Tokens:");
-            console.log("-".repeat(30));
-            for (const price of incentivePrices) {
-                const token = incentiveTokens.find((t: Token) => t.address === price.address);
-                console.log(`  ${token?.symbol}: $${price.price}`);
-            }
-        }
+        } 
     }
     console.log("\n" + "=".repeat(50) + "\n");
 }

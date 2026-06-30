@@ -58,34 +58,5 @@ export class BullIshGaugeAdapter extends BaseAdapter {
 
         return prices;
     }
-
-    async getIncentiveTokens(): Promise<Token[]> {
-        return [
-            {
-                address: "0x9b6761bf2397Bb5a6624a856cC84A3A14Dcd3fe5",
-                symbol: "iBERA",
-                name: "Infrared Bera",
-                decimals: 18,
-                chainId: 80094,
-            },
-            {
-                address: "0xD77552D3849ab4D8C3b189A9582d0ba4C1F4f912",
-                symbol: "wgBERA",
-                name: "Wrapped gBERA",
-                decimals: 18,
-                chainId: 80094,
-            },
-            {
-                address: "0x6969696969696969696969696969696969696969",
-                symbol: "WBERA",
-                name: "Wrapped BERA",
-                decimals: 18,
-                chainId: 80094,
-            },
-        ];
-    }
-
-    async getIncentiveTokenPrices(): Promise<TokenPrice[]> {
-        return [];
-    }
+ 
 }

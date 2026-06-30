@@ -70,21 +70,7 @@ export abstract class BaseAdapter {
      * @returns Promise resolving to list of token prices
      */
     abstract getRewardVaultStakingTokenPrices(stakingTokens: Token[]): Promise<TokenPrice[]>;
-
-    /**
-     * Get incentive/reward tokens available in the protocol
-     * @returns Promise resolving to list of tokens
-     */
-    abstract getIncentiveTokens(): Promise<Token[]>;
-
-    /**
-     * Get prices for incentive tokens. These prices will be used to determine total usd value of incentives as well as BGT APRs
-     * DO NOT include staking tokens in this list
-     * NO NEED to include incentive tokens that already have prices on https://hub.berachain.com/vaults
-     * @returns Promise resolving to list of token prices
-     */
-    abstract getIncentiveTokenPrices(incentiveTokens: Token[]): Promise<TokenPrice[]>;
-
+  
     TOKEN_PRICE_QUERY = gql`
         query ($tokens: [String!]!) {
             tokenGetCurrentPrices(chains: [BERACHAIN], addressIn: $tokens) {
