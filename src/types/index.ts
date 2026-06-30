@@ -70,7 +70,7 @@ export abstract class BaseAdapter {
      * @returns Promise resolving to list of token prices
      */
     abstract getRewardVaultStakingTokenPrices(stakingTokens: Token[]): Promise<TokenPrice[]>;
-  
+
     TOKEN_PRICE_QUERY = gql`
         query ($tokens: [String!]!) {
             tokenGetCurrentPrices(chains: [BERACHAIN], addressIn: $tokens) {

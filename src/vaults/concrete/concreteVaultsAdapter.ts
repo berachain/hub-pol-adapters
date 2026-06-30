@@ -3,7 +3,6 @@ import { BaseAdapter, Token, TokenPrice } from "../../types";
 interface ConcreteVault {
     vaultAddress: `0x${string}`;
     stakingToken: Token;
-    incentiveToken: Token;
     funded: boolean;
 }
 
@@ -18,13 +17,6 @@ const concreteVaults: Array<ConcreteVault> = [
             decimals: 18,
             chainId: 80094,
         },
-        incentiveToken: {
-            address: "0xFCBD14DC51f0A4d49d5E53C2E0950e0bC26d0Dce",
-            name: "Honey (HONEY)",
-            symbol: "HONEY",
-            decimals: 18,
-            chainId: 80094,
-        },
         funded: true,
     },
     {
@@ -33,13 +25,6 @@ const concreteVaults: Array<ConcreteVault> = [
             address: "0x6e0a95f6ac86ead002d58c83fc1b5a712ee9be7c",
             name: "Concrete Berabaddies BERA Vault Token",
             symbol: "ctBeraBaddiesWBERA",
-            decimals: 18,
-            chainId: 80094,
-        },
-        incentiveToken: {
-            address: "0x6969696969696969696969696969696969696969",
-            name: "Wrapped Bera (WBERA)",
-            symbol: "WBERA",
             decimals: 18,
             chainId: 80094,
         },
@@ -54,13 +39,6 @@ const concreteVaults: Array<ConcreteVault> = [
             decimals: 18,
             chainId: 80094,
         },
-        incentiveToken: {
-            address: "0x6fc6545d5cDE268D5C7f1e476D444F39c995120d",
-            name: "Berachain Staked ETH (beraETH)",
-            symbol: "beraETH",
-            decimals: 18,
-            chainId: 80094,
-        },
         funded: false,
     },
     {
@@ -72,13 +50,7 @@ const concreteVaults: Array<ConcreteVault> = [
             decimals: 18,
             chainId: 80094,
         },
-        incentiveToken: {
-            address: "0xbAC93A69c62a1518136FF840B788Ba715cbDfE2B",
-            name: "Fire Bitcoin (FBTC)",
-            symbol: "FBTC",
-            decimals: 18,
-            chainId: 80094,
-        },
+
         funded: false,
     },
     {
@@ -90,13 +62,7 @@ const concreteVaults: Array<ConcreteVault> = [
             decimals: 18,
             chainId: 80094,
         },
-        incentiveToken: {
-            address: "0xFCBD14DC51f0A4d49d5E53C2E0950e0bC26d0Dce",
-            name: "Honey (HONEY)",
-            symbol: "HONEY",
-            decimals: 18,
-            chainId: 80094,
-        },
+
         funded: false,
     },
     {
@@ -105,13 +71,6 @@ const concreteVaults: Array<ConcreteVault> = [
             address: "0x894d3d9d4542a307a3c76c82695bf5581fcc1383",
             name: "Concrete Berachain LBTC Vault Token",
             symbol: "ctBeraLBTC",
-            decimals: 18,
-            chainId: 80094,
-        },
-        incentiveToken: {
-            address: "0xecAc9C5F704e954931349Da37F60E39f515c11c1",
-            name: "Lombard Staked BTC (LBTC)",
-            symbol: "LBTC",
             decimals: 18,
             chainId: 80094,
         },
@@ -126,13 +85,6 @@ const concreteVaults: Array<ConcreteVault> = [
             decimals: 18,
             chainId: 80094,
         },
-        incentiveToken: {
-            address: "0x549943e04f40284185054145c6E4e9568C1D3241",
-            name: "Bridged USDC (Stargate) (USDC.e)",
-            symbol: "USDC.e",
-            decimals: 18,
-            chainId: 80094,
-        },
         funded: false,
     },
     {
@@ -141,13 +93,6 @@ const concreteVaults: Array<ConcreteVault> = [
             address: "0x52fe4126d6991d1095369dfe1a8ca17fd1aa401b",
             name: "Concrete Berachain USDT0 Vault Token",
             symbol: "ctBeraUSDT0",
-            decimals: 18,
-            chainId: 80094,
-        },
-        incentiveToken: {
-            address: "0x779Ded0c9e1022225f8E0630b35a9b54bE713736",
-            name: "USD₮0 (USD₮0)",
-            symbol: "USDT0",
             decimals: 18,
             chainId: 80094,
         },
@@ -162,13 +107,6 @@ const concreteVaults: Array<ConcreteVault> = [
             decimals: 18,
             chainId: 80094,
         },
-        incentiveToken: {
-            address: "0x5d3a1Ff2b6BAb83b63cd9AD0787074081a52ef34",
-            name: "USDe (USDe)",
-            symbol: "USDe",
-            decimals: 18,
-            chainId: 80094,
-        },
         funded: false,
     },
     {
@@ -177,13 +115,6 @@ const concreteVaults: Array<ConcreteVault> = [
             address: "0xea31ae7f4b4205badba164b1469e8f71de9ea867",
             name: "Concrete Berachain BERA Vault Token",
             symbol: "ctBeraWBERA",
-            decimals: 18,
-            chainId: 80094,
-        },
-        incentiveToken: {
-            address: "0x6969696969696969696969696969696969696969",
-            name: "Wrapped Bera (WBERA)",
-            symbol: "WBERA",
             decimals: 18,
             chainId: 80094,
         },
@@ -198,13 +129,6 @@ const concreteVaults: Array<ConcreteVault> = [
             decimals: 18,
             chainId: 80094,
         },
-        incentiveToken: {
-            address: "0x0555E30da8f98308EdB960aa94C0Db47230d2B9c",
-            name: "Wrapped BTC (WBTC)",
-            symbol: "WBTC",
-            decimals: 18,
-            chainId: 80094,
-        },
         funded: false,
     },
     {
@@ -213,13 +137,6 @@ const concreteVaults: Array<ConcreteVault> = [
             address: "0xffb155ef53cb08a0722c9eeeea5cb362d77ba125",
             name: "Concrete Berachain sUSDe Vault Token",
             symbol: "ctBerasUSDe",
-            decimals: 18,
-            chainId: 80094,
-        },
-        incentiveToken: {
-            address: "0x211Cc4DD073734dA055fbF44a2b4667d5E5fE5d2",
-            name: "Staked USDe (sUSDe)",
-            symbol: "sUSDe",
             decimals: 18,
             chainId: 80094,
         },
@@ -234,13 +151,6 @@ const concreteVaults: Array<ConcreteVault> = [
             decimals: 18,
             chainId: 80094,
         },
-        incentiveToken: {
-            address: "0xC3827A4BC8224ee2D116637023b124CED6db6e90",
-            name: "uniBTC (uniBTC)",
-            symbol: "uniBTC",
-            decimals: 18,
-            chainId: 80094,
-        },
         funded: false,
     },
     {
@@ -249,13 +159,6 @@ const concreteVaults: Array<ConcreteVault> = [
             address: "0x238cb854d644cb9b7a08e65eb803bffc05cfb834",
             name: "Concrete Berachain WETH Vault Token",
             symbol: "ctBeraWETH",
-            decimals: 18,
-            chainId: 80094,
-        },
-        incentiveToken: {
-            address: "0x2f6f07cdcf3588944bf4c42ac74ff24bf56e7590",
-            name: "WETH (WETH)",
-            symbol: "WETH",
             decimals: 18,
             chainId: 80094,
         },
@@ -337,5 +240,4 @@ export class ConcreteVaultAdapter extends BaseAdapter {
             })
         );
     }
- 
 }

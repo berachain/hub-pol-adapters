@@ -142,5 +142,4 @@ export class AquaBeraAdapter extends BaseAdapter {
             }
         );
     }
- 
 }

@@ -58,5 +58,4 @@ export class BullIshGaugeAdapter extends BaseAdapter {
 
         return prices;
     }
- 
 }

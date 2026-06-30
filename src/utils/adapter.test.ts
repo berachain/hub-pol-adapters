@@ -106,7 +106,7 @@ async function run(adapters: (typeof BaseAdapter)[]) {
                 const token = tokens.find((t: Token) => t.address === price.address);
                 console.log(`  ${token?.symbol}: $${price.price}`);
             }
-        } 
+        }
     }
     console.log("\n" + "=".repeat(50) + "\n");
 }

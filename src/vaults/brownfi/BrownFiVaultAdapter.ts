@@ -145,5 +145,5 @@ export class BrownFiVaultAdapter extends BaseAdapter {
                 };
             }
         );
-    } 
+    }
 }

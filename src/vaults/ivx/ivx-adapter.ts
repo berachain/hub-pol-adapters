@@ -131,5 +131,5 @@ export class IVXVaultAdapter extends BaseAdapter {
                     }) as const
             ),
         });
-    } 
+    }
 }
