@@ -45,47 +45,4 @@ export class SolvBTCBeraVaultAdapter extends BaseAdapter {
         );
         return prices;
     }
-
-    /**
-     * Get incentive/reward tokens
-     * These tokens are used to calculate reward value for APR calculations
-     */
-    async getIncentiveTokens(): Promise<Token[]> {
-        // Implement to return incentive tokens
-        return [
-            {
-                address: "0x541FD749419CA806a8bc7da8ac23D346f2dF8B77",
-                name: "Solv BTC",
-                symbol: "SolvBTC",
-                decimals: 18,
-                chainId: 80094,
-            },
-            {
-                address: "0xFCBD14DC51f0A4d49d5E53C2E0950e0bC26d0Dce",
-                name: "Honey",
-                symbol: "HONEY",
-                decimals: 18,
-                chainId: 80094,
-            },
-            {
-                address: "0xac03CABA51e17c86c921E1f6CBFBdC91F8BB2E6b",
-                name: "Infrared BGT",
-                symbol: "iBGT",
-                decimals: 18,
-                chainId: 80094,
-            },
-        ];
-    }
-
-    /**
-     * Get prices for incentive tokens
-     * These prices are used to calculate reward value for APR calculations
-     *
-     * Note: You don't need to implement this if your token is already listed on Hub or Kodiak,
-     * or if it's tracked by Coingecko (in which case, add it to the Berachain Metadata repo)
-     */
-    async getIncentiveTokenPrices(_incentiveTokens: Token[]): Promise<TokenPrice[]> {
-        // Implement to return incentive token prices
-        return [];
-    }
 }

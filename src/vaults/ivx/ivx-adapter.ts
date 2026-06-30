@@ -132,38 +132,4 @@ export class IVXVaultAdapter extends BaseAdapter {
             ),
         });
     }
-    /**
-     * Get incentive/reward tokens
-     * These tokens are used to calculate reward value for APR calculations
-     */
-    async getIncentiveTokens(): Promise<Token[]> {
-        return [
-            {
-                address: "0xFCBD14DC51f0A4d49d5E53C2E0950e0bC26d0Dce",
-                symbol: "HONEY",
-                name: "Honey",
-                decimals: 18,
-                chainId: 80094,
-            },
-            {
-                address: "0x6969696969696969696969696969696969696969",
-                symbol: "WBERA",
-                name: "Wrapped Bera",
-                decimals: 18,
-                chainId: 80094,
-            },
-        ];
-    }
-
-    /**
-     * Get prices for incentive tokens
-     * These prices are used to calculate reward value for APR calculations
-     *
-     * Note: You don't need to implement this if your token is already listed on Hub or Kodiak,
-     * or if it's tracked by Coingecko (in which case, add it to the Berachain Metadata repo)
-     */
-    async getIncentiveTokenPrices(_incentiveTokens: Token[]): Promise<TokenPrice[]> {
-        // Implement to return incentive token prices
-        return [];
-    }
 }

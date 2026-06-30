@@ -130,27 +130,6 @@ export class YourProtocolAdapter extends BaseAdapter {
             },
         ];
     }
-
-    /**
-     * Get incentive/reward tokens
-     * These tokens are used to calculate reward value for APR calculations
-     */
-    async getIncentiveTokens(): Promise<Token[]> {
-        // Implement to return incentive tokens
-        return [];
-    }
-
-    /**
-     * Get prices for incentive tokens
-     * These prices are used to calculate reward value for APR calculations
-     *
-     * Note: You don't need to implement this if your token is already listed on Hub or Kodiak,
-     * or if it's tracked by Coingecko (in which case, add it to the Berachain Metadata repo)
-     */
-    async getIncentiveTokenPrices(incentiveTokens: Token[]): Promise<TokenPrice[]> {
-        // Implement to return incentive token prices
-        return [];
-    }
 }
 ```
 
