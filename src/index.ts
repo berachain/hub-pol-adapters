@@ -1,20 +1,35 @@
-import { AquaBeraAdapter } from "./vaults/aquabera/AquaBeraAdapter";
+export {
+  BasePriceAdapter,
+  type Token,
+  type TokenPriceFulfilled,
+  type TokenPriceRejected,
+  type TokenPriceResult,
+  type TokenAndPrice,
+  type PriceQueryOptions,
+  type GetTokenPrices,
+  type PriceAdapterConfig,
+} from "./types";
 
-import { ConcreteVaultAdapter } from "./vaults/concrete/concreteVaultsAdapter";
-import { SxVaultAdapter } from "./vaults/sx/sxVaultAdapter";
-import { BullIshGaugeAdapter } from "./vaults/bullish/BullIshGaugeAdapter";
-import { IVXVaultAdapter } from "./vaults/ivx/ivx-adapter";
-import { SolvBTCBeraVaultAdapter } from "./vaults/solv/SolvBTCBeraVaultAdapter";
+export { AquaBeraAdapter } from "./adapters/aquabera/adapter";
+export { BrownFiVaultAdapter } from "./adapters/brownfi/adapter";
+export { BullIshGaugeAdapter } from "./adapters/bullish/adapter";
+export { IVXVaultAdapter } from "./adapters/ivx/adapter";
+export { SolvBTCBeraVaultAdapter } from "./adapters/solv/adapter";
+export { SxVaultAdapter } from "./adapters/sx/adapter";
 
-import { BaseAdapter } from "./types";
-import { BrownFiVaultAdapter } from "./vaults/brownfi/BrownFiVaultAdapter";
+import { AquaBeraAdapter } from "./adapters/aquabera/adapter";
+import { BrownFiVaultAdapter } from "./adapters/brownfi/adapter";
+import { BullIshGaugeAdapter } from "./adapters/bullish/adapter";
+import { IVXVaultAdapter } from "./adapters/ivx/adapter";
+import { SolvBTCBeraVaultAdapter } from "./adapters/solv/adapter";
+import { SxVaultAdapter } from "./adapters/sx/adapter";
+import { BasePriceAdapter } from "./types";
 
 export const adapters = [
-    AquaBeraAdapter,
-    ConcreteVaultAdapter,
-    SxVaultAdapter,
-    BullIshGaugeAdapter,
-    IVXVaultAdapter,
-    SolvBTCBeraVaultAdapter,
-    BrownFiVaultAdapter,
-] as const satisfies (typeof BaseAdapter)[];
+  AquaBeraAdapter,
+  SxVaultAdapter,
+  BullIshGaugeAdapter,
+  IVXVaultAdapter,
+  SolvBTCBeraVaultAdapter,
+  BrownFiVaultAdapter,
+] as const satisfies (typeof BasePriceAdapter)[];

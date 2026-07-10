@@ -8,6 +8,5 @@ export default defineConfig({
     platform: "node",
     target: "node20",
     clean: true,
-    noExternal: ["graphql-request"],
     skipNodeModulesBundle: false,
 });
